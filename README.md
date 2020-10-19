@@ -1,3 +1,3 @@
 # CO395-CW
 
-hello 
+how to run our code
