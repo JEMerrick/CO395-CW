@@ -13,7 +13,7 @@ source_7 = []
 room_no = []
 
 for datapoint in all:
-    source_1.append(datapoint[0])
+    source_1.append(datapoint[0]) #all[datapoint][0]
     source_2.append(datapoint[1])
     source_3.append(datapoint[2])
     source_4.append(datapoint[3])
