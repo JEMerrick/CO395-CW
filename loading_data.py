@@ -1,8 +1,9 @@
 import numpy as np
-from math import log, e
+from numpy.random import shuffle
+from math import log
 
-#can't select last 10% as they will all be in room 4, not enough variation
 all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+shuffle(all_data)
 training_number = int(0.8*len(all_data))
 validation_end = int(0.9*len(all_data))
 training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
