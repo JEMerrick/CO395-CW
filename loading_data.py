@@ -1,5 +1,7 @@
 import numpy as np
 
+#how to split this into random 80/10/10 ratio?
+#can't select last 10% as they will all be in room 4, not enough variation
 all = np.loadtxt("WIFI.db/clean_dataset.txt")
 print(all)
 
