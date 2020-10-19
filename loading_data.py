@@ -1,8 +1,9 @@
 import numpy as np
+from math import log, e
 
 #how to split this into random 80/10/10 ratio?
 #can't select last 10% as they will all be in room 4, not enough variation
-all = np.loadtxt("WIFI.db/clean_dataset.txt")
+training_set = np.loadtxt("WIFI.db/clean_dataset.txt")
 print(all)
 
 source_1 = []
@@ -14,7 +15,7 @@ source_6 = []
 source_7 = []
 room_no = [] #LABEL
 
-for datapoint in all:
+for datapoint in training_set:
     source_1.append(datapoint[0]) #all[datapoint][0]
     source_2.append(datapoint[1])
     source_3.append(datapoint[2])
@@ -24,8 +25,9 @@ for datapoint in all:
     source_7.append(datapoint[6])
     room_no.append(datapoint[7])
 
-for signal in source_1:
-    print(signal)
+def label_entropy(labels):
+    value,label_occurrences = np.unique(labels, return_counts=True)
+    hits = label_occurrences / len(training_set)
+    return -(hits * np.log2(hits)).sum()
 
-for signal in room_no:
-    print(signal)
+print("room number entropy: "+ str(label_entropy(room_no)))
