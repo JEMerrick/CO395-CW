@@ -9,6 +9,7 @@ training_number = int(8*decile)
 validation_end = int(9*decile)
 training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
 print(training)
+print(len(training))
 print(validation)
 print(testing)
 
@@ -23,6 +24,7 @@ fold_8 = all_data[int(7*decile):int(8*decile)]
 fold_9 = all_data[int(8*decile):int(9*decile)]
 fold_10 = all_data[int(9*decile):]
 print(len(fold_1))
+print(len(fold_10))
 
 
 
