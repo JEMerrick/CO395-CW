@@ -1,3 +1,7 @@
-# CO395-CW
+# CO395 -- Introduction to Machine Learning -- Coursework 1
 
-how to run our code
+Authors:
+- Jo Merrick
+- George Chen
+- Jason Keung
+- Jason Zheng
