@@ -28,11 +28,11 @@ def find_split(training): #this function chooses the attribute and the value tha
 
 def decision_tree_learning(training, depth): # use dicts to store nodes: node has attribute, value, left, right (left and right are both nodes), can add bool to say if leaf or not
     node = {
-        "attribute" = None,
-        "value" = None,
-        "left" = None,
-        "right" = None,
-        "leaf" = False,
+        "attribute": None,
+        "value": None,
+        "left": None,
+        "right": None,
+        "leaf": False,
     }
 
     # if all samples have same label: CHECK LAST COLUMN OF TRAINING
