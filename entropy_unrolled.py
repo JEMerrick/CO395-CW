@@ -2,13 +2,20 @@ import numpy as np
 from numpy.random import shuffle
 from math import log
 
+#Load data
+
 all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+
+#Splitting the training data up
+
 shuffle(all_data)
 decile = 0.1*len(all_data)
 training_number = int(8*decile)
 validation_end = int(9*decile)
 training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
 
+
+#Entropy of rooms
 def entropy(array):
     rooms = []
     for row in array:
@@ -26,6 +33,7 @@ def find_split(array):
     source_no = 1
     threshold = -50
     return source_no, threshold
+
 
 left = []
 right = []
