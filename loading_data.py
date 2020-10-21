@@ -22,10 +22,16 @@ def entropy(array):
 entropy_all = entropy(training)
 print("S(all): " + str(entropy_all))
 
+def find_split(array):
+    source_no = 1
+    threshold = -50
+    return source_no, threshold
+
 left = []
 right = []
 for row in training:
-    if(row[0] < -50): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
+    source_no, threshold = find_split(training)
+    if(row[source_no-1] < threshold): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
         left.append(row)
     else:
         right.append(row)
@@ -34,7 +40,7 @@ entropy_left = entropy(left)
 print("S(left): " + str(entropy_left))
 
 entropy_right = entropy(right)
-print("S(left): " + str(entropy_right))
+print("S(right): " + str(entropy_right))
 
 remainder = (len(left)/(len(left)+len(right)))*entropy_left +(len(right)/(len(left)+len(right)))*entropy_right
 information_gain = entropy_all - remainder
