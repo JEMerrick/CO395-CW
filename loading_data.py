@@ -13,7 +13,7 @@ def entropy(array):
     rooms = []
     for row in array:
         rooms.append(row[7])
-    value,label_occurrences = np.unique(rooms, return_counts=True)
+    room_number,label_occurrences = np.unique(rooms, return_counts=True)
     hits = label_occurrences / len(array)
     entropy = -(hits * np.log2(hits)).sum()
     return entropy
