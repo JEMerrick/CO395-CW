@@ -9,22 +9,6 @@ training_number = int(8*decile)
 validation_end = int(9*decile)
 training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
 
-print(training)
-print(len(training))
-print(validation)
-print(testing)
-
-fold_1 = all_data[:int(decile)]
-fold_2 = all_data[int(decile):int(2*decile)]
-fold_3 = all_data[int(2*decile):int(3*decile)]
-fold_4 = all_data[int(3*decile):int(4*decile)]
-fold_5 = all_data[int(4*decile):int(5*decile)]
-fold_6 = all_data[int(5*decile):int(6*decile)]
-fold_7 = all_data[int(6*decile):int(7*decile)]
-fold_8 = all_data[int(7*decile):int(8*decile)]
-fold_9 = all_data[int(8*decile):int(9*decile)]
-fold_10 = all_data[int(9*decile):]
-
 def entropy(array):
     rooms = []
     for row in array:
@@ -34,7 +18,7 @@ def entropy(array):
     entropy = -(hits * np.log2(hits)).sum()
     return entropy
 
-#for decision tree
+#FIRST SPLIT
 entropy_all = entropy(training)
 print("S(all): " + str(entropy_all))
 
@@ -56,3 +40,22 @@ remainder = (len(left)/(len(left)+len(right)))*entropy_left +(len(right)/(len(le
 information_gain = entropy_all - remainder
 
 print("Information Gain: " + str(information_gain))
+
+
+
+
+
+
+
+
+#Validation
+fold_1 = all_data[:int(decile)]
+fold_2 = all_data[int(decile):int(2*decile)]
+fold_3 = all_data[int(2*decile):int(3*decile)]
+fold_4 = all_data[int(3*decile):int(4*decile)]
+fold_5 = all_data[int(4*decile):int(5*decile)]
+fold_6 = all_data[int(5*decile):int(6*decile)]
+fold_7 = all_data[int(6*decile):int(7*decile)]
+fold_8 = all_data[int(7*decile):int(8*decile)]
+fold_9 = all_data[int(8*decile):int(9*decile)]
+fold_10 = all_data[int(9*decile):]
