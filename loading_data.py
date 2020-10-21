@@ -25,9 +25,6 @@ fold_8 = all_data[int(7*decile):int(8*decile)]
 fold_9 = all_data[int(8*decile):int(9*decile)]
 fold_10 = all_data[int(9*decile):]
 
-print(len(fold_1))
-print(len(fold_10))
-
 #for decision tree
 source_1 = []
 source_2 = []
@@ -38,19 +35,40 @@ source_6 = []
 source_7 = []
 room_no = [] #LABEL
 
-for datapoint in training:
-    source_1.append(datapoint[0]) #all[datapoint][0]
-    source_2.append(datapoint[1])
-    source_3.append(datapoint[2])
-    source_4.append(datapoint[3])
-    source_5.append(datapoint[4])
-    source_6.append(datapoint[5])
-    source_7.append(datapoint[6])
-    room_no.append(datapoint[7])
+for row in training:
+    source_1.append(row[0]) #all[row][0]
+    source_2.append(row[1])
+    source_3.append(row[2])
+    source_4.append(row[3])
+    source_5.append(row[4])
+    source_6.append(row[5])
+    source_7.append(row[6])
+    room_no.append(row[7])
 
-def label_entropy(labels):
-    value,label_occurrences = np.unique(labels, return_counts=True)
-    hits = label_occurrences / len(labels)
-    return -(hits * np.log2(hits)).sum()
+value,label_occurrences = np.unique(room_no, return_counts=True)
+hits = label_occurrences / len(training)
+entropy_all = -(hits * np.log2(hits)).sum()
+print("S(all): " + str(entropy_all))
 
-print("room number entropy: " + str(label_entropy(room_no)))
+left = []
+right = []
+for row in training:
+    if(row[0] < -50):
+        left.append(row)
+    else:
+        right.append(row)
+
+value,label_occurrences = np.unique(room_no, return_counts=True)
+hits = label_occurrences / len(left)
+entropy_left = -(hits * np.log2(hits)).sum()
+print("S(left): " + str(entropy_left))
+
+value,label_occurrences = np.unique(room_no, return_counts=True)
+hits = label_occurrences / len(right)
+entropy_right = -(hits * np.log2(hits)).sum()
+print("S(right): " + str(entropy_right))
+
+remainder = (len(left)/(len(left)+len(right)))*entropy_left +(len(right)/(len(left)+len(right)))*entropy_right
+information_gain = entropy_all - remainder
+
+print("Information Gain: " + str(information_gain))

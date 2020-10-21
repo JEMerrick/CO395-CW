@@ -4,8 +4,8 @@ from math import log
 
 # class Node:
 #     def __init__(self, attribute, value, left, right, leaf):
-#         self.attribute  = 
-#         self.value = 
+#         self.attribute  =
+#         self.value =
 #         self.left = None
 #         self.right = None
 #         self.leaf = False
@@ -22,6 +22,8 @@ def find_split(training): #this function chooses the attribute and the value tha
     # while keeping track of running totals of positive and negative examples on each side of split point
 
     # Check information gain + entropy here and select the biggest one
+    # |Sleft| = number of rows after split (on the left)
+    # H(Sleft) = entropy of LHS after split e.g. (Source1 < 10)
     return
 
 def decision_tree_learning(training, depth): # use dicts to store nodes: node has attribute, value, left, right (left and right are both nodes), can add bool to say if leaf or not
@@ -41,4 +43,3 @@ def decision_tree_learning(training, depth): # use dicts to store nodes: node ha
         l_branch, l_depth = decision_tree_learning(l_dataset, depth + 1)
         r_branch, r_depth = decision_tree_learning(r_dataset, depth + 1)
         return node, max(l_depth, r_depth)
-
