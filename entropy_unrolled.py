@@ -44,7 +44,7 @@ def find_split(array):
                 midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
                 # Find the Gain(midpoint, S)
                 remainder = ((j + 1) / rows * entropy(sortedArray[:j+1])) + ((rows - j + 1) / rows * entropy(sortedArray[j+1:]))
-                # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain 
+                # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain
                 print(i,midpoint, remainder)
                 if remainder > maxChange[2]:
                     maxChange = [i, midpoint, remainder]
@@ -56,8 +56,8 @@ def find_split(array):
 
 left = []
 right = []
+source_no, threshold = find_split(training)
 for row in training:
-    source_no, threshold = find_split(training)
     if(row[source_no-1] < threshold): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
         left.append(row)
     else:
