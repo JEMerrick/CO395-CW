@@ -11,3 +11,6 @@ bigboynode = {
       "right": rightnode
 }
 print("bigboy:" + str(bigboynode))
+print("left:" + str(bigboynode["left"]))
+print("right:" + str(bigboynode["right"]))
+print("right def:" + str(bigboynode["right"]["def"]))
