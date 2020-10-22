@@ -25,15 +25,37 @@ def entropy(array):
     entropy = -(hits * np.log2(hits)).sum()
     return entropy
 
-#FIRST SPLIT
+#Entropy of whole dataset (Entropy(S))
 entropy_all = entropy(training)
 print("S(all): " + str(entropy_all))
 
-def find_split(array):
-    source_no = 1
-    threshold = -50
-    return source_no, threshold
-
+#Finding split/threshold
+def find_split(array):    
+#To iterate over each column
+    columns = array.shape[1] - 1
+    for i in range(columns):
+#Take the current column and the final column (rooms) into one array
+        tempArray = array[:,[i,columns]]
+#Sort current column by ascending attribute
+        sortArray = tempArray[np.argsort(array[:,i])]
+#Cycle through all the data values
+        transArray = sortArray.T
+        roomArray = transArray[1,:]
+#maxchange = [source_no, midpoint, remainder]
+        maxChange = [-1,-1,-1]
+#Find the points where Room changes value
+        rows = roomArray.shape[0]
+        for j in range(rows - 1):
+            if roomArray[j] != roomArray[j+1]:
+#Take the midpoint of these two values
+                midpoint = (transArray[0, j] + transArray[0, j+1])/2
+#Find the Gain(midpoint, S)
+                remainder = ((j/roomArray.shape[0]) * entropy(array[0:j,:])) +(((roomArray.shape[0] - j)/roomArray.shape[0]) * entropy(array[j:,:]))
+#If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain 
+                if remainder > maxChange[2]:
+                    maxChange = [i, midpoint, remainder]
+#Continue until all elements have been read in that column and the max midpoint has been identified
+    return maxChange[0], maxChange[1]
 
 left = []
 right = []
