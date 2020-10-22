@@ -48,7 +48,7 @@ def find_split(array):
                 print(i,midpoint, remainder)
                 if remainder > maxChange[2]:
                     maxChange = [i, midpoint, remainder]
-                    print(" ---------  maxChange ----------- ")
+                    print(" ----------------  maxChange ----------------- ")
                     print(maxChange)
         # Continue until all elements have been read in that column and the max midpoint has been identified
     return maxChange[0], maxChange[1]
