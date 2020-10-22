@@ -57,6 +57,8 @@ def find_split(array):
 left = []
 right = []
 source_no, threshold = find_split(training)
+print(source_no)
+print(threshold)
 for row in training:
     if(row[source_no-1] < threshold): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
         left.append(row)
