@@ -30,32 +30,29 @@ entropy_all = entropy(training)
 print("S(all): " + str(entropy_all))
 
 #Finding split/threshold
-def find_split(array):    
-#To iterate over each column
-    columns = array.shape[1] - 1
+def find_split(array):
+    maxChange = [-1,-1,-1] # [source_no, midpoint, remainder]
+    rows, columns = array.shape[0], array.shape[1] - 1
+    # Iterate over each column (not the last column of course, because it holds the room number)
     for i in range(columns):
-#Take the current column and the final column (rooms) into one array
-        tempArray = array[:,[i,columns]]
-#Sort current column by ascending attribute
-        sortArray = tempArray[np.argsort(array[:,i])]
-#Cycle through all the data values
-        transArray = sortArray.T
-        roomArray = transArray[1,:]
-#maxchange = [source_no, midpoint, remainder]
-        maxChange = [-1,-1,-1]
-#Find the points where Room changes value
-        rows = roomArray.shape[0]
+        # Sort the entire array by the current column
+        sortedArray = array[np.argsort(array[:,i])]
+        # Find the points where Room changes value
         for j in range(rows - 1):
-            if roomArray[j] != roomArray[j+1]:
-#Take the midpoint of these two values
-                midpoint = (transArray[0, j] + transArray[0, j+1])/2
-#Find the Gain(midpoint, S)
-                remainder = ((j/roomArray.shape[0]) * entropy(array[0:j,:])) +(((roomArray.shape[0] - j)/roomArray.shape[0]) * entropy(array[j:,:]))
-#If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain 
+            if sortedArray[j,columns] != sortedArray[j+1,columns]:
+                # Take the midpoint of these two values in the current column
+                midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
+                # Find the Gain(midpoint, S)
+                remainder = ((j + 1) / rows * entropy(sortedArray[:j+1])) + ((rows - j + 1) / rows * entropy(sortedArray[j+1:]))
+                # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain 
+                print(i,midpoint, remainder)
                 if remainder > maxChange[2]:
                     maxChange = [i, midpoint, remainder]
-#Continue until all elements have been read in that column and the max midpoint has been identified
+                    print(" ---------  maxChange ----------- ")
+                    print(maxChange)
+        # Continue until all elements have been read in that column and the max midpoint has been identified
     return maxChange[0], maxChange[1]
+
 
 left = []
 right = []
