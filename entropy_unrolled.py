@@ -45,11 +45,11 @@ def find_split(array):
                 # Find the Gain(midpoint, S)
                 remainder = ((j + 1) / rows * entropy(sortedArray[:j+1])) + ((rows - j + 1) / rows * entropy(sortedArray[j+1:]))
                 # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain
-                print(i,midpoint, remainder)
+                #print(i,midpoint, remainder)
                 if remainder > maxChange[2]:
                     maxChange = [i, midpoint, remainder]
-                    print(" ----------------  maxChange ----------------- ")
-                    print(maxChange)
+                    #print(" ----------------  maxChange ----------------- ")
+                    #print(maxChange)
         # Continue until all elements have been read in that column and the max midpoint has been identified
     return maxChange[0], maxChange[1]
 
