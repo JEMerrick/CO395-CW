@@ -15,7 +15,7 @@ training, validation, testing = all_data[:training_number], all_data[training_nu
 def entropy(array):
     rooms = []
     for row in array:
-        rooms.append(row[7])
+        rooms.append(row[-1])
     room_number, label_occurrences = np.unique(rooms, return_counts = True)
     hits = label_occurrences / len(array)
     entropy = -(hits * np.log2(hits)).sum()
@@ -54,12 +54,12 @@ def find_split(array):
                     # Take the midpoint of these two values in the current column
                     midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
                     # Find the Gain(midpoint, S)
-                    remainder = (((j + 1) / rows) * entropy(sortedArray[:j+1,:])) + (((rows - (j + 1)) / rows) * entropy(sortedArray[j+1:,:]))
-                    # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain
+                    remainder = (((j + 1) / rows) * entropy(sortedArray[:j+1,:])) + (((rows - (j + 1)) / rows) * entropy(sortedArray[j+1:,:])) + 0
+                    # If Gain > maxChange.gain maxChange = midpoint, gain
+                    gain = entropy_all - remainder
 
-                    if ((entropy_all - remainder) > maxChange[2]):
-                        print(j)
-                        maxChange = [i, midpoint, remainder]
+                    if(gain > maxChange[2]):
+                        maxChange = [i, midpoint, gain]
                         print(" ----------------  maxChange ----------------- ")
                         print(maxChange)
             # Continue until all elements have been read in that column and the max midpoint has been identified
@@ -94,12 +94,13 @@ def decision_tree_learning(training, depth):
         print(split_value)
         left_set = []
         right_set = []
+        print(training)
+        ##TODO ERROR HERE, split function is not splitting the data
         for row in training:
             if(row[attribute] <= split_value):
                 left_set.append(row)
             else:
                 right_set.append(row)
-
         node = {
             "attribute": attribute,
             "value": split_value,
