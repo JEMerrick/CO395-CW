@@ -15,10 +15,10 @@ training, validation, testing = all_data[:training_number], all_data[training_nu
 def entropy(array):
     rooms = []
     for row in array:
-        rooms.append(row[-1])
-    room_number, label_occurrences = np.unique(rooms, return_counts = True)
-    hits = label_occurrences / len(array)
-    entropy = -(hits * np.log2(hits)).sum()
+        rooms.append(row[-1]) #isolate last column (room no)
+    room_number, label_occurrences = np.unique(rooms, return_counts = True) #room no: 1 2 3 4
+    hits = label_occurrences / len(array) #label_occurrences = no. occurrences of room no: 1 2 3 4 respectvively
+    entropy = -(hits * np.log2(hits)).sum() #entropy = plog2(p)
     return entropy
 
 # #Entropy of whole dataset (Entropy(S))
@@ -28,11 +28,11 @@ def entropy(array):
 #Finding split/threshold
 def find_split(array):
     print("find split")
-    
+
     #Entropy of whole dataset (Entropy(S))
     entropy_all = entropy(array)
     print("S(all): " + str(entropy_all))
-    
+
     maxChange = [0,0,0] # [source_no, midpoint, remainder]
     rows, columns = array.shape[0], array.shape[1] - 1
     # Iterate over each column (not the last column of course, because it holds the room number)
@@ -44,7 +44,7 @@ def find_split(array):
                 diff = abs(sortedArray[j,i] - sortedArray[j+1,i])
                 if(maxChange[2] < diff):
                     maxChange = [i, midpoint, diff]
-    else:            
+    else:
         for i in range(columns):
             # Sort the entire array by the current column
             sortedArray = array[np.argsort(array[:,i])]
