@@ -75,3 +75,12 @@ remainder = (len(left)/(len(left)+len(right)))*entropy_left +(len(right)/(len(le
 information_gain = entropy_all - remainder
 
 print("Information Gain: " + str(information_gain))
+
+def label_same(array):
+    count = 0
+    initial = array[0][7]
+    for row in array:
+        if(row[7] == initial): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
+            count+=1
+    if(count == len(array)):
+        return true
