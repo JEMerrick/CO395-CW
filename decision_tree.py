@@ -43,7 +43,7 @@ def find_split(array):
                 midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
                 diff = abs(sortedArray[j,i] - sortedArray[j+1,i])
                 if(maxChange[2] < diff):
-                    maxChange = [i, midpoint, diff]
+                    maxChange = [i, j, diff]
     else:
         for i in range(columns):
             # Sort the entire array by the current column
@@ -59,7 +59,7 @@ def find_split(array):
                     gain = entropy_all - remainder
 
                     if(gain > maxChange[2]):
-                        maxChange = [i, midpoint, gain]
+                        maxChange = [i, j, gain]
                         print(" ----------------  maxChange ----------------- ")
                         print(maxChange)
             # Continue until all elements have been read in that column and the max midpoint has been identified
@@ -92,15 +92,12 @@ def decision_tree_learning(training, depth):
         print(attribute)
         print("split_value")
         print(split_value)
-        left_set = []
-        right_set = []
         print(training)
         ##TODO ERROR HERE, split function is not splitting the data
-        for row in training:
-            if(row[attribute] <= split_value):
-                left_set.append(row)
-            else:
-                right_set.append(row)
+        #sort data
+        sortedData = training[np.argsort(training[:,attribute])]
+        left_set = sortedData[:split_value+1,:]
+        right_set = sortedData[split_value+1:,:]
         node = {
             "attribute": attribute,
             "value": split_value,
