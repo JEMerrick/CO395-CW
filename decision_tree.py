@@ -46,9 +46,12 @@ def find_split(array):
                     #print(" ----------------  max_change ----------------- ")
                     #print(max_change)
         # Continue until all elements have been read in that column and the max midpoint has been identified
+
     return max_change[0], max_change[1]
 
 def label_same(array):
+    if array.size == 0:
+        return True
     initial = array[0][-1] # Last element of first row (attribute)
     for row in array:
         if row[-1] != initial:
@@ -56,8 +59,6 @@ def label_same(array):
     return True
 
 def decision_tree_learning(training, depth):
-    # TODO: FIX THE IF CONDITION TO CHECK IF ALL SAMPLES HAVE SAME LABEL
-    # TODO: LAST COLUMN OF TRAINING IS THE LABELS
     if label_same(training):
         node = {
             "attribute": None,
@@ -85,6 +86,9 @@ def decision_tree_learning(training, depth):
             "right": None,
             "leaf": False,
         }
+
+        left_set = np.array(left_set)
+        right_set = np.array(right_set)
 
         node["left"], l_depth = decision_tree_learning(left_set, depth + 1)
         node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
