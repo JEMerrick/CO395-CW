@@ -49,10 +49,19 @@ def find_split(array):
         # Continue until all elements have been read in that column and the max midpoint has been identified
     return max_change[0], max_change[1]
 
+def label_same(array):
+    count = 0
+    initial = array[0][7]
+    for row in array:
+        if(row[7] == initial): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
+            count+=1
+    if(count == len(array)):
+        return true
+
 def decision_tree_learning(training, depth):
     # TODO: FIX THE IF CONDITION TO CHECK IF ALL SAMPLES HAVE SAME LABEL
     # TODO: LAST COLUMN OF TRAINING IS THE LABELS
-    if True:
+    if label_same(training):
         node = {
             "attribute": None,
             "value": None,
@@ -63,7 +72,7 @@ def decision_tree_learning(training, depth):
         return node, depth
     else:
         attribute, split_value = find_split(training)
-        
+
         left_set = []
         right_set = []
         for row in training:
