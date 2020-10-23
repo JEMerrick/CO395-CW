@@ -2,14 +2,13 @@ import numpy as np
 from numpy.random import shuffle
 from math import log
 
-all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
-shuffle(all_data)
-decile = 0.1 * len(all_data)
-training_number = int(8 * decile)
-validation_end = int(9 * decile)
-training = all_data[:training_number]
-validation = all_data[training_number : validation_end]
-testing =  all_data[validation_end:]
+# all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+
+# shuffle(all_data)
+# decile = 0.1*len(all_data)
+# training_number = int(8*decile)
+# validation_end = int(9*decile)
+# training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
 
 #Entropy of rooms
 def entropy(array):
@@ -50,13 +49,11 @@ def find_split(array):
     return max_change[0], max_change[1]
 
 def label_same(array):
-    count = 0
-    initial = array[0][7]
+    initial = array[0][-1] # Last element of first row (attribute)
     for row in array:
-        if(row[7] == initial): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
-            count+=1
-    if(count == len(array)):
-        return true
+        if row[-1] != initial:
+            return False
+    return True
 
 def decision_tree_learning(training, depth):
     # TODO: FIX THE IF CONDITION TO CHECK IF ALL SAMPLES HAVE SAME LABEL
@@ -92,3 +89,21 @@ def decision_tree_learning(training, depth):
         node["left"], l_depth = decision_tree_learning(left_set, depth + 1)
         node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
         return node, max(l_depth, r_depth)
+
+def main():
+    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+    shuffle(all_data)
+    decile = 0.1 * len(all_data)
+    training_number = int(8 * decile)
+    validation_end = int(9 * decile)
+    training = np.array(all_data[:training_number])
+    validation = np.array(all_data[training_number : validation_end])
+    testing =  np.array(all_data[validation_end:])
+    # training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
+
+    node, depth = decision_tree_learning(training, 0)
+    print(node)
+    print("Depth is ", depth)
+
+
+main()

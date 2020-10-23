@@ -83,4 +83,4 @@ def label_same(array):
         if(row[7] == initial): #I AM TESTING ATTRIBUTE SOURCE_1 < -50
             count+=1
     if(count == len(array)):
-        return true
+        return True
