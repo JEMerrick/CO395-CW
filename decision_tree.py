@@ -2,44 +2,84 @@ import numpy as np
 from numpy.random import shuffle
 from math import log
 
-# class Node:
-#     def __init__(self, attribute, value, left, right, leaf):
-#         self.attribute  =
-#         self.value =
-#         self.left = None
-#         self.right = None
-#         self.leaf = False
-
 all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 shuffle(all_data)
-decile = 0.1*len(all_data)
-training_number = int(8*decile)
-validation_end = int(9*decile)
-training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
+decile = 0.1 * len(all_data)
+training_number = int(8 * decile)
+validation_end = int(9 * decile)
+training = all_data[:training_number]
+validation = all_data[training_number : validation_end]
+testing =  all_data[validation_end:]
 
-def find_split(training): #this function chooses the attribute and the value that results in the highest information gain
-    # Sort the values of the attribute and then consider only split points taht are between two examples in sorted order
-    # while keeping track of running totals of positive and negative examples on each side of split point
+#Entropy of rooms
+def entropy(array):
+    rooms = []
+    for row in array:
+        rooms.append(row[7])
+    room_number, label_occurrences = np.unique(rooms, return_counts = True)
+    hits = label_occurrences / len(array)
+    entropy = -(hits * np.log2(hits)).sum()
+    return entropy
 
-    # Check information gain + entropy here and select the biggest one
-    # |Sleft| = number of rows after split (on the left)
-    # H(Sleft) = entropy of LHS after split e.g. (Source1 < 10)
-    return
+# #Entropy of whole dataset (Entropy(S))
+# entropy_all = entropy(training)
+# print("S(all): " + str(entropy_all))
 
-def decision_tree_learning(training, depth): # use dicts to store nodes: node has attribute, value, left, right (left and right are both nodes), can add bool to say if leaf or not
-    node = {
-        "attribute": None,
-        "value": None,
-        "left": None,
-        "right": None,
-        "leaf": False,
-    }
+#Finding split/threshold
+def find_split(array):
+    max_change = [-1,-1,-1] # [source_no, midpoint, remainder]
+    rows, columns = array.shape[0], array.shape[1] - 1
+    # Iterate over each column (not the last column of course, because it holds the room number)
+    for i in range(columns):
+        # Sort the entire array by the current column
+        sorted_array = array[np.argsort(array[:,i])]
+        # Find the points where Room changes value
+        for j in range(rows - 1):
+            if sorted_array[j, columns] != sorted_array[j + 1, columns]:
+                # Take the midpoint of these two values in the current column
+                midpoint = (sorted_array[j,i] + sorted_array[j + 1,i]) / 2
+                # Find the Gain(midpoint, S)
+                remainder = ((j + 1) / rows * entropy(sorted_array[:j + 1])) + ((rows - j + 1) / rows * entropy(sorted_array[j + 1:]))
+                # If Gain > max_change.gain (this is the same as if remainder > max_change), max_change = midpoint, gain
+                #print(i,midpoint, remainder)
+                if remainder > max_change[2]:
+                    max_change = [i, midpoint, remainder]
+                    #print(" ----------------  max_change ----------------- ")
+                    #print(max_change)
+        # Continue until all elements have been read in that column and the max midpoint has been identified
+    return max_change[0], max_change[1]
 
-    # if all samples have same label: CHECK LAST COLUMN OF TRAINING
-        return node
+def decision_tree_learning(training, depth):
+    # TODO: FIX THE IF CONDITION TO CHECK IF ALL SAMPLES HAVE SAME LABEL
+    # TODO: LAST COLUMN OF TRAINING IS THE LABELS
+    if True:
+        node = {
+            "attribute": None,
+            "value": None,
+            "left": None,
+            "right": None,
+            "leaf": True,
+        }
+        return node, depth
     else:
-        split = find_split(training)
-        # node = new node with root = split
-        l_branch, l_depth = decision_tree_learning(l_dataset, depth + 1)
-        r_branch, r_depth = decision_tree_learning(r_dataset, depth + 1)
+        attribute, split_value = find_split(training)
+        
+        left_set = []
+        right_set = []
+        for row in training:
+            if(row[attribute - 1] < split_value):
+                left_set.append(row)
+            else:
+                right_set.append(row)
+
+        node = {
+            "attribute": attribute,
+            "value": split_value,
+            "left": None,
+            "right": None,
+            "leaf": False,
+        }
+
+        node["left"], l_depth = decision_tree_learning(left_set, depth + 1)
+        node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
         return node, max(l_depth, r_depth)
