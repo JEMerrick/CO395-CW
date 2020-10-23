@@ -33,7 +33,7 @@ def find_split(array):
     entropy_all = entropy(array)
     print("S(all): " + str(entropy_all))
 
-    maxChange = [0,0,0] # [source_no, index, remainder]
+    maxChange = [0,0,0,0] # [source_no, index, remainder, midpoint]
     rows, columns = array.shape[0], array.shape[1] - 1
     # Iterate over each column (not the last column of course, because it holds the room number)
     if(rows == 2):
@@ -43,7 +43,7 @@ def find_split(array):
                 midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
                 diff = abs(sortedArray[j,i] - sortedArray[j+1,i])
                 if(maxChange[2] < diff):
-                    maxChange = [i, j, diff]
+                    maxChange = [i, j, diff, midpoint]
     else:
         for i in range(columns):
             # Sort the entire array by the current column
@@ -59,11 +59,11 @@ def find_split(array):
                     gain = entropy_all - remainder
 
                     if(gain > maxChange[2]):
-                        maxChange = [i, j, gain]
+                        maxChange = [i, j, gain, midpoint]
                         print(" ----------------  maxChange ----------------- ")
                         print(maxChange)
             # Continue until all elements have been read in that column and the max midpoint has been identified
-    return maxChange[0], maxChange[1]
+    return maxChange[0], maxChange[1], maxChange[3]
 
 
 def label_same(array):
@@ -87,7 +87,7 @@ def decision_tree_learning(training, depth):
         }
         return node, depth
     else:
-        attribute, split_value = find_split(training)
+        attribute, index, split_value = find_split(training)
         print("attribute")
         print(attribute)
         print("split_value")
@@ -96,8 +96,8 @@ def decision_tree_learning(training, depth):
         ##TODO ERROR HERE, split function is not splitting the data
         #sort data
         sortedData = training[np.argsort(training[:,attribute])]
-        left_set = sortedData[:split_value+1,:]
-        right_set = sortedData[split_value+1:,:]
+        left_set = sortedData[:index+1,:]
+        right_set = sortedData[index+1:,:]
         node = {
             "attribute": attribute,
             "value": split_value,
