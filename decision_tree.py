@@ -33,26 +33,36 @@ def find_split(array):
     entropy_all = entropy(array)
     print("S(all): " + str(entropy_all))
     
-    maxChange = [-1,-1,-1] # [source_no, midpoint, remainder]
+    maxChange = [0,0,0] # [source_no, midpoint, remainder]
     rows, columns = array.shape[0], array.shape[1] - 1
     # Iterate over each column (not the last column of course, because it holds the room number)
-    for i in range(columns):
-        # Sort the entire array by the current column
-        sortedArray = array[np.argsort(array[:,i])]
-        # Find the points where Room changes value
-        for j in range(rows - 1):
-            if sortedArray[j,columns] != sortedArray[j+1,columns]:
-                # Take the midpoint of these two values in the current column
+    if(rows == 2):
+        for i in range(columns):
+            sortedArray = array[np.argsort(array[:,i])]
+            for j in range(rows - 1):
                 midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
-                # Find the Gain(midpoint, S)
-                remainder = (((j + 1) / rows) * entropy(sortedArray[:j+1])) + (((rows - j + 1) / rows) * entropy(sortedArray[j+1:]))
-                # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain
-                #print(i,midpoint, remainder)
-                if (entropy_all - remainder) > maxChange[2]:
-                    maxChange = [i, midpoint, remainder]
-                    #print(" ----------------  maxChange ----------------- ")
-                    #print(maxChange)
-        # Continue until all elements have been read in that column and the max midpoint has been identified
+                diff = abs(sortedArray[j,i] - sortedArray[j+1,i])
+                if(maxChange[2] < diff):
+                    maxChange = [i, midpoint, diff]
+    else:            
+        for i in range(columns):
+            # Sort the entire array by the current column
+            sortedArray = array[np.argsort(array[:,i])]
+            # Find the points where Room changes value
+            for j in range(rows - 1):
+                if sortedArray[j,columns] != sortedArray[j+1,columns]:
+                    # Take the midpoint of these two values in the current column
+                    midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
+                    # Find the Gain(midpoint, S)
+                    remainder = (((j + 1) / rows) * entropy(sortedArray[:j+1,:])) + (((rows - (j + 1)) / rows) * entropy(sortedArray[j+1:,:]))
+                    # If Gain > maxChange.gain (this is the same as if remainder > maxChange), maxChange = midpoint, gain
+
+                    if ((entropy_all - remainder) > maxChange[2]):
+                        print(j)
+                        maxChange = [i, midpoint, remainder]
+                        print(" ----------------  maxChange ----------------- ")
+                        print(maxChange)
+            # Continue until all elements have been read in that column and the max midpoint has been identified
     return maxChange[0], maxChange[1]
 
 
