@@ -33,7 +33,7 @@ def find_split(array):
     entropy_all = entropy(array)
     print("S(all): " + str(entropy_all))
 
-    maxChange = [0,0,0] # [source_no, midpoint, remainder]
+    maxChange = [0,0,0] # [source_no, index, remainder]
     rows, columns = array.shape[0], array.shape[1] - 1
     # Iterate over each column (not the last column of course, because it holds the room number)
     if(rows == 2):
