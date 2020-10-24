@@ -114,4 +114,13 @@ def main():
     print(node)
     print("Depth is ", depth)
 
+    test_row = validation[0]
+    actual_room = validation[0][7]
+    while(node["leaf"] == True):
+        if(test_row[node["attribute"]] < node["value"]):
+            node = node["left"]
+        else:
+            node = node["right"]
+    predicted_room = node["attribute"]
+
 main()
