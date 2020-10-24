@@ -30,7 +30,7 @@ def find_split(array): # Finding split/threshold
                 diff = abs(sorted_array[j, i] - sorted_array[j + 1, i])
                 if(max_change[2] < diff):
                     max_change = [i, j, diff, midpoint]
-                    
+
             elif sorted_array[j, columns] != sorted_array[j + 1, columns]:
                 # Take the midpoint of these two values in the current column
                 midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
@@ -79,9 +79,9 @@ def decision_tree_learning(training, depth):
     # print(training)
 
     #sort data
-    sortedData = training[np.argsort(training[:, attribute])]
-    left_set = sortedData[:index + 1, :]
-    right_set = sortedData[index + 1:, :]
+    sorted_data = training[np.argsort(training[:, attribute])]
+    left_set = sorted_data[:index + 1, :]
+    right_set = sorted_data[index + 1:, :]
     node = {
         "attribute": attribute,
         "value": split_value,
