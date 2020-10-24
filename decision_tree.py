@@ -97,7 +97,54 @@ def decision_tree_learning(training, depth):
     node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
     return node, max(l_depth, r_depth)
 
-def evaluate():
+def evaluate(all_data, node):
+    
+    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+    
+    decile = 0.1 * len(all_data)
+    training_number = int(8 * decile)
+    validation_end = int(9 * decile)
+    
+    confusion_matrix = []
+    
+    #TODO K fold validation code
+    '''for i in range(10):
+        training = all_data[:training_number + decile]
+        validation = all_data[((training_number + decile)%len(all_data)) : ((validation_end + decile)%len(all_data))]
+        testing = all_data[((validation_end + decile)%len(all_data)) : decile]'''
+        
+    training = all_data[:training_number]
+    validation = all_data[training_number :validation_end]
+    testing = all_data[validation_end:]
+    
+    #Testing a single row first
+    test_row = validation[0]
+    actual_room = validation[0][7]
+    predicted_room = 0
+    predicted_room = traverse(node, predicted_room, test_row) 
+    
+    return confusion_matrix
+
+def traverse(node, room, test_row):
+    '''print(test_row)
+    print("node")
+    print(node["value"])
+    print(node["attribute"])'''
+    
+    #if node value == none, we are at a leaf node
+    if(node["value"] == None):
+        room = node["attribute"]
+    else:
+    #node[attribute] = column being tested, test_row[node[attribute]] = value in test row in that column that we want to compare
+        if(test_row[node["attribute"]] < node["value"]):
+            traverse(node["left"], room, test_row)
+        else:
+            traverse(node["right"], room, test_row)        
+    
+    return room
+
+def main():
+    
     all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 
     shuffle(all_data)
@@ -105,32 +152,16 @@ def evaluate():
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
-    
-    for i in range(10):
-        training = all_data[:training_number + decile]
-        validation = all_data[training_number + decile:validation_end + decile]
-        testing = all_data[validation_end + decile:]
-        
-        
 
-def main():
-    
-
-    
-
-    
+    training = all_data[:training_number]
+    validation = all_data[training_number :validation_end]
+    testing = all_data[validation_end:]
 
     node, depth = decision_tree_learning(training, 0)
     print(node)
     print("Depth is ", depth)
+    print("node")
+    confusion_matrix = evaluate(all_data, node)
 
-    test_row = validation[0]
-    actual_room = validation[0][7]
-    while(node["leaf"] == True):
-        if(test_row[node["attribute"]] < node["value"]):
-            node = node["left"]
-        else:
-            node = node["right"]
-    predicted_room = node["attribute"]
 
 main()
