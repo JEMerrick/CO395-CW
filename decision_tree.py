@@ -30,20 +30,20 @@ def find_split(array): # Finding split/threshold
                 diff = abs(sorted_array[j, i] - sorted_array[j + 1, i])
                 if(max_change[2] < diff):
                     max_change = [i, j, diff, midpoint]
-            else:
-                if sorted_array[j, columns] != sorted_array[j + 1, columns]:
-                    # Take the midpoint of these two values in the current column
-                    midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
+                    
+            elif sorted_array[j, columns] != sorted_array[j + 1, columns]:
+                # Take the midpoint of these two values in the current column
+                midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
 
-                    # Find the Gain(midpoint, S)
-                    remainder = (((j + 1) / rows) * entropy(sorted_array[:j + 1, :])) + (((rows - (j + 1)) / rows) * entropy(sorted_array[j + 1:, :])) + 0
-                    gain = entropy_all - remainder
+                # Find the Gain(midpoint, S)
+                remainder = (((j + 1) / rows) * entropy(sorted_array[:j + 1, :])) + (((rows - (j + 1)) / rows) * entropy(sorted_array[j + 1:, :])) + 0
+                gain = entropy_all - remainder
 
-                    # If Gain > max_change.gain max_change = midpoint, gain
-                    if(gain > max_change[2]):
-                        max_change = [i, j, gain, midpoint]
-                        # print(" ----------------  max_change ----------------- ")
-                        # print(max_change)
+                # If Gain > max_change.gain max_change = midpoint, gain
+                if(gain > max_change[2]):
+                    max_change = [i, j, gain, midpoint]
+                    # print(" ----------------  max_change ----------------- ")
+                    # print(max_change)
             # Continue until all elements have been read in that column and the max midpoint has been identified
     return max_change[0], max_change[1], max_change[3]
 
