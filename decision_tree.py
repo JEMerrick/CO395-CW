@@ -2,73 +2,54 @@ import numpy as np
 from numpy.random import shuffle
 from math import log
 
-all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
-
-shuffle(all_data)
-decile = 0.1 * len(all_data)
-training_number = int(8 * decile)
-validation_end = int(9 * decile)
-training, validation, testing = all_data[:training_number], all_data[training_number:validation_end], all_data[validation_end:]
-
-
-#Entropy of rooms
-def entropy(array):
+def entropy(array): # Entropy of rooms
     rooms = []
     for row in array:
-        rooms.append(row[-1]) #isolate last column (room no)
+        rooms.append(row[-1]) # Isolate last column (room no)
     room_number, label_occurrences = np.unique(rooms, return_counts = True) #room no: 1 2 3 4
-    hits = label_occurrences / len(array) #label_occurrences = no. occurrences of room no: 1 2 3 4 respectvively
-    entropy = -(hits * np.log2(hits)).sum() #entropy = plog2(p)
+    hits = label_occurrences / len(array) # label_occurrences = no. occurrences of room no: 1 2 3 4 respectvively
+    entropy = -(hits * np.log2(hits)).sum() # entropy = plog2(p)
     return entropy
 
-# #Entropy of whole dataset (Entropy(S))
-# entropy_all = entropy(training)
-# print("S(all): " + str(entropy_all))
+def find_split(array): # Finding split/threshold
+    # print("find split")
 
-#Finding split/threshold
-def find_split(array):
-    print("find split")
+    entropy_all = entropy(array) # Entropy of whole dataset (Entropy(S))
+    # print("S(all): " + str(entropy_all))
 
-    #Entropy of whole dataset (Entropy(S))
-    entropy_all = entropy(array)
-    print("S(all): " + str(entropy_all))
-
-    maxChange = [0,0,0,0] # [source_no, index, remainder, midpoint]
+    max_change = [0, 0, 0, 0] # [source_no, index, remainder, midpoint]
     rows, columns = array.shape[0], array.shape[1] - 1
     # Iterate over each column (not the last column of course, because it holds the room number)
-    if(rows == 2):
-        for i in range(columns):
-            sortedArray = array[np.argsort(array[:,i])]
-            for j in range(rows - 1):
-                midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
-                diff = abs(sortedArray[j,i] - sortedArray[j+1,i])
-                if(maxChange[2] < diff):
-                    maxChange = [i, j, diff, midpoint]
-    else:
-        for i in range(columns):
-            # Sort the entire array by the current column
-            sortedArray = array[np.argsort(array[:,i])]
-            # Find the points where Room changes value
-            for j in range(rows - 1):
-                if sortedArray[j,columns] != sortedArray[j+1,columns]:
+
+    for i in range(columns):
+        sorted_array = array[np.argsort(array[:, i])] # Sort the entire array by the current column
+        # Find the points where Room changes value
+        for j in range(rows - 1):
+            if(rows == 2):
+                midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
+                diff = abs(sorted_array[j, i] - sorted_array[j + 1, i])
+                if(max_change[2] < diff):
+                    max_change = [i, j, diff, midpoint]
+            else:
+                if sorted_array[j, columns] != sorted_array[j + 1, columns]:
                     # Take the midpoint of these two values in the current column
-                    midpoint = (sortedArray[j,i] + sortedArray[j+1,i]) / 2
+                    midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
+
                     # Find the Gain(midpoint, S)
-                    remainder = (((j + 1) / rows) * entropy(sortedArray[:j+1,:])) + (((rows - (j + 1)) / rows) * entropy(sortedArray[j+1:,:])) + 0
-                    # If Gain > maxChange.gain maxChange = midpoint, gain
+                    remainder = (((j + 1) / rows) * entropy(sorted_array[:j + 1, :])) + (((rows - (j + 1)) / rows) * entropy(sorted_array[j + 1:, :])) + 0
                     gain = entropy_all - remainder
 
-                    if(gain > maxChange[2]):
-                        maxChange = [i, j, gain, midpoint]
-                        print(" ----------------  maxChange ----------------- ")
-                        print(maxChange)
+                    # If Gain > max_change.gain max_change = midpoint, gain
+                    if(gain > max_change[2]):
+                        max_change = [i, j, gain, midpoint]
+                        # print(" ----------------  max_change ----------------- ")
+                        # print(max_change)
             # Continue until all elements have been read in that column and the max midpoint has been identified
-    return maxChange[0], maxChange[1], maxChange[3]
-
+    return max_change[0], max_change[1], max_change[3]
 
 def label_same(array):
-    print("array")
-    print(array)
+    # print("array")
+    # print(array)
     initial = array[0][-1] # Last element of first row (attribute)
     for row in array:
         if row[-1] != initial:
@@ -76,7 +57,7 @@ def label_same(array):
     return True
 
 def decision_tree_learning(training, depth):
-    print("decision tree")
+    # print("decision tree")
     if label_same(training):
         node = {
             "attribute": None,
@@ -86,36 +67,51 @@ def decision_tree_learning(training, depth):
             "leaf": True,
         }
         return node, depth
-    else:
-        attribute, index, split_value = find_split(training)
-        print("attribute")
-        print(attribute)
-        print("split_value")
-        print(split_value)
-        print(training)
-        ##TODO ERROR HERE, split function is not splitting the data
-        #sort data
-        sortedData = training[np.argsort(training[:,attribute])]
-        left_set = sortedData[:index+1,:]
-        right_set = sortedData[index+1:,:]
-        node = {
-            "attribute": attribute,
-            "value": split_value,
-            "left": None,
-            "right": None,
-            "leaf": False,
-        }
 
-        left_set = np.array(left_set)
-        right_set = np.array(right_set)
+    attribute, index, split_value = find_split(training)
 
-        node["left"], l_depth = decision_tree_learning(left_set, depth + 1)
-        node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
-        return node, max(l_depth, r_depth)
+    # print("attribute")
+    # print(attribute)
 
+    # print("split_value")
+    # print(split_value)
 
+    # print(training)
+    
+    #sort data
+    sortedData = training[np.argsort(training[:, attribute])]
+    left_set = sortedData[:index + 1, :]
+    right_set = sortedData[index + 1:, :]
+    node = {
+        "attribute": attribute,
+        "value": split_value,
+        "left": None,
+        "right": None,
+        "leaf": False,
+    }
 
+    left_set = np.array(left_set)
+    right_set = np.array(right_set)
 
-node, depth = decision_tree_learning(training, 0)
-print(node)
-print("Depth is ", depth)
+    node["left"], l_depth = decision_tree_learning(left_set, depth + 1)
+    node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
+    return node, max(l_depth, r_depth)
+
+def main():
+    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+
+    shuffle(all_data)
+
+    decile = 0.1 * len(all_data)
+    training_number = int(8 * decile)
+    validation_end = int(9 * decile)
+
+    training = all_data[:training_number]
+    validation = all_data[training_number:validation_end]
+    testing = all_data[validation_end:]
+
+    node, depth = decision_tree_learning(training, 0)
+    print(node)
+    print("Depth is ", depth)
+
+main()
