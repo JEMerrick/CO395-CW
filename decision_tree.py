@@ -60,7 +60,7 @@ def decision_tree_learning(training, depth):
     # print("decision tree")
     if label_same(training):
         node = {
-            "attribute": None,
+            "attribute": training[0][-1],
             "value": None,
             "left": None,
             "right": None,
@@ -77,7 +77,7 @@ def decision_tree_learning(training, depth):
     # print(split_value)
 
     # print(training)
-    
+
     #sort data
     sortedData = training[np.argsort(training[:, attribute])]
     left_set = sortedData[:index + 1, :]
