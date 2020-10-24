@@ -97,18 +97,28 @@ def decision_tree_learning(training, depth):
     node["right"], r_depth = decision_tree_learning(right_set, depth + 1)
     return node, max(l_depth, r_depth)
 
-def main():
+def evaluate():
     all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 
     shuffle(all_data)
-
+    
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
+    
+    for i in range(10):
+        training = all_data[:training_number + decile]
+        validation = all_data[training_number + decile:validation_end + decile]
+        testing = all_data[validation_end + decile:]
+        
+        
 
-    training = all_data[:training_number]
-    validation = all_data[training_number:validation_end]
-    testing = all_data[validation_end:]
+def main():
+    
+
+    
+
+    
 
     node, depth = decision_tree_learning(training, 0)
     print(node)
