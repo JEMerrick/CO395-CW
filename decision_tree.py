@@ -25,7 +25,7 @@ def find_split(array): # Finding split/threshold
         sorted_array = array[np.argsort(array[:, i])] # Sort the entire array by the current column
         # Find the points where Room changes value
         for j in range(rows - 1):
-            if(rows == 2):
+            if rows == 2:
                 midpoint = (sorted_array[j, i] + sorted_array[j + 1, i]) / 2
                 diff = abs(sorted_array[j, i] - sorted_array[j + 1, i])
                 if(max_change[2] < diff):
