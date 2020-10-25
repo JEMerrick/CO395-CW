@@ -98,31 +98,39 @@ def decision_tree_learning(training, depth):
     return node, max(l_depth, r_depth)
 
 def evaluate(all_data, node):
-    
+
     all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
-    
+
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
-    
+
     confusion_matrix = []
-    
+
     #TODO K fold validation code
     '''for i in range(10):
         training = all_data[:training_number + decile]
         validation = all_data[((training_number + decile)%len(all_data)) : ((validation_end + decile)%len(all_data))]
         testing = all_data[((validation_end + decile)%len(all_data)) : decile]'''
-        
+
     training = all_data[:training_number]
     validation = all_data[training_number :validation_end]
     testing = all_data[validation_end:]
-    
+
     #Testing a single row first
     test_row = validation[0]
     actual_room = validation[0][7]
+    print("actual room: " + str(actual_room))
     predicted_room = 0
-    predicted_room = traverse(node, predicted_room, test_row) 
-    
+    predicted_room = traverse(node, predicted_room, test_row)
+    print("predicted room: " + str(predicted_room))
+    confusion_matrix = [0, 0, 0, 0]
+    if((predicted_room == actual_room) and (actual_room == 1)):
+        confusion_matrix[0]+=1
+    elif((predicted_room == actual_room) and (actual_room == 2)):
+        confusion_matrix[1]+=1
+    elif((predicted_room != actual_room) and (actual_room == 4)):
+        confusion_matrix[2]+=1
     return confusion_matrix
 
 def traverse(node, room, test_row):
@@ -130,7 +138,7 @@ def traverse(node, room, test_row):
     print("node")
     print(node["value"])
     print(node["attribute"])'''
-    
+
     #if node value == none, we are at a leaf node
     if(node["value"] == None):
         room = node["attribute"]
@@ -139,16 +147,16 @@ def traverse(node, room, test_row):
         if(test_row[node["attribute"]] < node["value"]):
             traverse(node["left"], room, test_row)
         else:
-            traverse(node["right"], room, test_row)        
-    
+            traverse(node["right"], room, test_row)
+
     return room
 
 def main():
-    
+
     all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 
     shuffle(all_data)
-    
+
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
@@ -162,6 +170,6 @@ def main():
     print("Depth is ", depth)
     print("node")
     confusion_matrix = evaluate(all_data, node)
-
+    print(confusion_matrix)
 
 main()
