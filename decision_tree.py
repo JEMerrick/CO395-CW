@@ -105,7 +105,7 @@ def evaluate(all_data, node):
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
 
-    confusion_matrix = []
+    confusion_matrix = np.zeros(shape=(4,4))
 
     #TODO K fold validation code
     '''for i in range(10):
@@ -124,13 +124,7 @@ def evaluate(all_data, node):
     predicted_room = 0
     predicted_room = traverse(node, predicted_room, test_row)
     print("predicted room: " + str(predicted_room))
-    confusion_matrix = [0, 0, 0, 0]
-    if((predicted_room == actual_room) and (actual_room == 1)):
-        confusion_matrix[0]+=1
-    elif((predicted_room == actual_room) and (actual_room == 2)):
-        confusion_matrix[1]+=1
-    elif((predicted_room != actual_room) and (actual_room == 4)):
-        confusion_matrix[2]+=1
+    confusion_matrix[int(actual_room-1)][int(predicted_room-1)]+=1
     return confusion_matrix
 
 def traverse(node, room, test_row):
@@ -149,7 +143,7 @@ def traverse(node, room, test_row):
         if(test_row[node["attribute"]] < node["value"]):
             room = traverse(node["left"], room, test_row)
         else:
-            room = traverse(node["right"], room, test_row)        
+            room = traverse(node["right"], room, test_row)
 
     return room
 
