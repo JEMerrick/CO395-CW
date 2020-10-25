@@ -120,9 +120,10 @@ def evaluate(all_data, node):
     #Testing a single row first
     test_row = validation[0]
     actual_room = validation[0][7]
-    predicted_room = 0
+    predicted_room = -1
     predicted_room = traverse(node, predicted_room, test_row) 
-    
+    print("predicted room")
+    print(predicted_room)
     return confusion_matrix
 
 def traverse(node, room, test_row):
@@ -134,12 +135,14 @@ def traverse(node, room, test_row):
     #if node value == none, we are at a leaf node
     if(node["value"] == None):
         room = node["attribute"]
+        print("room is ")
+        print(room)
     else:
     #node[attribute] = column being tested, test_row[node[attribute]] = value in test row in that column that we want to compare
         if(test_row[node["attribute"]] < node["value"]):
-            traverse(node["left"], room, test_row)
+            room = traverse(node["left"], room, test_row)
         else:
-            traverse(node["right"], room, test_row)        
+            room = traverse(node["right"], room, test_row)        
     
     return room
 
