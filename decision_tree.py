@@ -104,18 +104,79 @@ def evaluate(all_data, node):
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
+    
+    training = all_data[:training_number]
+    validation = all_data[training_number :validation_end]
+    testing = all_data[validation_end:]
 
     confusion_matrix = []
 
     #TODO K fold validation code
-    '''for i in range(10):
-        training = all_data[:training_number + decile]
-        validation = all_data[((training_number + decile)%len(all_data)) : ((validation_end + decile)%len(all_data))]
-        testing = all_data[((validation_end + decile)%len(all_data)) : decile]'''
+    #Minimum row no
+    data_min = 0
+    #Max row no
+    data_max = all_data.shape[0]
+    print("rOWS")
+    print(data_max)
+    
+    for i in range(10):
+        #increments
+        x = int(i * decile)
+        print("x = ")
+        print(x)
+        
+        #Split into data ranges, A training (80%), B validation (10%), C testing (10%)
+        A_start = x
+        A_end = int(x + (8*decile))
+        
+        B_start = A_end
+        B_end = int(B_start + decile)
+        
+        C_start = B_end
+        C_end = int(C_start + decile)
+        
+        if(A_start > data_max):
+            A_start = A_start - data_max
+        if(B_start > data_max):
+            B_start = B_start - data_max
+        if(C_start > data_max):
+            C_start = C_start - data_max
+        if(A_end > data_max):
+            A_end = A_end - data_max
+        if(B_end > data_max):
+            B_end = B_end - data_max
+        if(C_end > data_max):
+            C_end = C_end - data_max
+        
+        
+        print("run number", i)
+        if(A_end > A_start):
+            training = all_data[A_start:A_end]
+            print("A")
+            print(A_start, A_end)
+        else:
+            training = np.concatenate([all_data[A_start:data_max], all_data[data_min:A_end]])
+            print("A")
+            print(A_start, data_max, data_min, A_end)
+        if(B_end > B_start):
+            validation = all_data[B_start:B_end]
+            print("B")
+            print(B_start, B_end)
+        else:
+            validation = np.concatenate([all_data[B_start:data_max], all_data[data_min:B_end]])
+            print("B")
+            print(B_start, data_max, data_min, B_end)
+        if(C_end > C_start):
+            testing = all_data[C_start:C_end]
+            print("C")
+            print(C_start, C_end)
+        else:
+            testing = np.concatenate([all_data[C_start:data_max], all_data[data_min:C_end]])
+            print("C")
+            print(C_start, data_max, data_min, C_end)
+    
 
-    training = all_data[:training_number]
-    validation = all_data[training_number :validation_end]
-    testing = all_data[validation_end:]
+    
 
     #Testing a single row first
     test_row = validation[0]
