@@ -99,15 +99,7 @@ def decision_tree_learning(training, depth):
 
 def evaluate(all_data, node):
 
-    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
-
     decile = 0.1 * len(all_data)
-    training_number = int(8 * decile)
-    validation_end = int(9 * decile)
-
-    training = all_data[:training_number]
-    validation = all_data[training_number :validation_end]
-    testing = all_data[validation_end:]
 
     #TODO K fold validation code
     #Minimum row no
