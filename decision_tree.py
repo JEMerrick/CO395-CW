@@ -104,12 +104,10 @@ def evaluate(all_data, node):
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
     validation_end = int(9 * decile)
-    
+
     training = all_data[:training_number]
     validation = all_data[training_number :validation_end]
     testing = all_data[validation_end:]
-
-    confusion_matrix = np.zeros(shape=(4,4))
 
     #TODO K fold validation code
     #Minimum row no
@@ -118,23 +116,25 @@ def evaluate(all_data, node):
     data_max = all_data.shape[0]
     print("rOWS")
     print(data_max)
-    
+
     for i in range(10):
         #increments
         x = int(i * decile)
         print("x = ")
         print(x)
-        
+
+        confusion_matrix = np.zeros(shape=(4,4))
+
         #Split into data ranges, A training (80%), B validation (10%), C testing (10%)
         A_start = x
         A_end = int(x + (8*decile))
-        
+
         B_start = A_end
         B_end = int(B_start + decile)
-        
+
         C_start = B_end
         C_end = int(C_start + decile)
-        
+
         if(A_start > data_max):
             A_start = A_start - data_max
         if(B_start > data_max):
@@ -147,46 +147,60 @@ def evaluate(all_data, node):
             B_end = B_end - data_max
         if(C_end > data_max):
             C_end = C_end - data_max
-        
-        
-        print("run number", i)
+
+
+        print("run number", i+1)
         if(A_end > A_start):
             training = all_data[A_start:A_end]
-            print("A")
-            print(A_start, A_end)
+            #print("A")
+            #print(A_start, A_end)
         else:
             training = np.concatenate([all_data[A_start:data_max], all_data[data_min:A_end]])
-            print("A")
-            print(A_start, data_max, data_min, A_end)
+            #print("A")
+            #print(A_start, data_max, data_min, A_end)
         if(B_end > B_start):
             validation = all_data[B_start:B_end]
-            print("B")
-            print(B_start, B_end)
+            #print("B")
+            #print(B_start, B_end)
         else:
             validation = np.concatenate([all_data[B_start:data_max], all_data[data_min:B_end]])
-            print("B")
-            print(B_start, data_max, data_min, B_end)
+            #print("B")
+            #print(B_start, data_max, data_min, B_end)
         if(C_end > C_start):
             testing = all_data[C_start:C_end]
-            print("C")
-            print(C_start, C_end)
+            #print("C")
+            #print(C_start, C_end)
         else:
             testing = np.concatenate([all_data[C_start:data_max], all_data[data_min:C_end]])
-            print("C")
-            print(C_start, data_max, data_min, C_end)
-    
+            #print("C")
+            #print(C_start, data_max, data_min, C_end)
 
-    
+        for row in validation:
+            actual_room = row[-1]
+            #print("actual room: " + str(actual_room))
+            predicted_room = 0
+            predicted_room = traverse(node, predicted_room, row)
+            #print("predicted room: " + str(predicted_room))
+            confusion_matrix[int(actual_room-1)][int(predicted_room-1)]+=1
 
-    #Testing a single row first
-    test_row = validation[0]
-    actual_room = validation[0][7]
-    print("actual room: " + str(actual_room))
-    predicted_room = 0
-    predicted_room = traverse(node, predicted_room, test_row)
-    print("predicted room: " + str(predicted_room))
-    confusion_matrix[int(actual_room-1)][int(predicted_room-1)]+=1
-    return confusion_matrix
+        print(confusion_matrix)
+        #define room 1 as positive i.e. A[0][0]
+        TP = confusion_matrix[0][0]
+        TN = confusion_matrix[1][1] + confusion_matrix[2][2] + confusion_matrix[3][3]
+        FP = confusion_matrix[1][0] + confusion_matrix[2][0] + confusion_matrix[3][0]
+        FN = confusion_matrix[0][1] + confusion_matrix[0][2] + confusion_matrix[0][3]
+        accuracy = (TP + TN)/len(validation)
+        precision = TP/(TP+FP)
+        recall = TP/(TP + FN)
+        F1 = (2*precision*recall)/(precision+recall)
+        print("accuracy: " + str(accuracy))
+        print("precision: " + str(precision))
+        print("recall: " + str(recall))
+        print("F1: " + str(F1))
+
+
+
+    return 1
 
 def traverse(node, room, test_row):
     '''print(test_row)
@@ -197,8 +211,8 @@ def traverse(node, room, test_row):
     #if node value == none, we are at a leaf node
     if(node["value"] == None):
         room = node["attribute"]
-        print("room is ")
-        print(room)
+        #print("room is ")
+        #print(room)
     else:
     #node[attribute] = column being tested, test_row[node[attribute]] = value in test row in that column that we want to compare
         if(test_row[node["attribute"]] < node["value"]):
@@ -225,8 +239,7 @@ def main():
     node, depth = decision_tree_learning(training, 0)
     print(node)
     print("Depth is ", depth)
-    print("node")
-    confusion_matrix = evaluate(all_data, node)
-    print(confusion_matrix)
+    evaluate(all_data, node)
+
 
 main()
