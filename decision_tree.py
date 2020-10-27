@@ -202,6 +202,13 @@ def evaluate(all_data, node):
         print("recall: " + str(recall))
         print("F1: " + str(F1))
 
+        # define room 2 as positive i.e. A[1][1]
+        true_pos = confusion_matrix[1][1]
+        true_neg = confusion_matrix[0][0] + confusion_matrix[2][2] + confusion_matrix[3][3]
+        false_pos = confusion_matrix[0][1] + confusion_matrix[2][1] + confusion_matrix[3][1]
+        false_neg = confusion_matrix[1][0] + confusion_matrix[1][2] + confusion_matrix[1][3]
+
+        # two other rooms, average across 4 (macro) cba do it now
     return 1
 
 
