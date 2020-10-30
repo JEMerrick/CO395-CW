@@ -270,35 +270,57 @@ def prune(node, validation, training):
     #Find the accuracy of the current tree
     confusion_matrix = makeconfusion(node, validation)
     Accuracy = accuracy(confusion_matrix, validation)
+    print(" ######   original accuracy    #####")
+    print(Accuracy)
     
     #Find the new tree and accuracy
-    newTree = depth_search(node, training)
+    newTree = depth_search(node, training, validation, node)
+    print("############### NEW TREE #############")
+    print(newTree)
     confusion_matrix = makeconfusion(newTree, validation)
     newAccuracy = accuracy(confusion_matrix, validation)
     
+    print("#####    new accuracy    ######")
+    print(newAccuracy)
+    
     #Keep looking through leaf nodes, making new trees until accuracy is improved
+    #Accurcy = Accuracy of whole treee
+    #Finding the max accuracy
     while(newAccuracy < Accuracy):
         #Set the old accuracy = new accuracy
         Accuracy = newAccuracy
         #Set the old tree = new tree
         Tree = newTree
         #Find the next tree
-        newTree = depth_search(Tree, training)
+        newTree = depth_search(Tree, training, validation, Tree)
         #Find the new accuracy
         confusion_matrix = makeconfusion(newTree, validation)
         newAccuracy = accuracy(confusion_matrix, validation)
-        
+        print("################## old-new accuracy #########################")
+        print(Accuracy)
+        print(newAccuracy)
     return Tree
 
-def depth_search(node, training):
+def depth_search(node, training, validation, rootNode):
+    print("#### TREE ####")
+    print(rootNode)
     
     left = node["left"]
     right = node["right"]
+    
     #we are searching for a parent node with two leaves. We want to remove 1 leaf
     if(node["leaf"] == True):
         return node
     else:
         if((left["leaf"] == True) and (right["leaf"] == True)):
+            #Finding accuracy of original node
+            confusion_matrix = makeconfusion(rootNode, validation)
+            Accuracy = accuracy(confusion_matrix, validation)
+            print("old accuracy")
+            print(Accuracy)
+            
+            #Save the old node incase
+            oldNode = node
             
             #Remove the leaf nodes, set the current node as a leaf
             node["left"] = None
@@ -310,11 +332,22 @@ def depth_search(node, training):
             #Need the set of data associated with each node
             #Taking column of rooms only
             rooms = training[:,-1].astype(int)
-            print("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
-            print(rooms)
             frequentRoom = np.argmax(np.bincount(rooms.flat))
-            print(frequentRoom)
             node["attribute"] = frequentRoom 
+            
+            #TODO Test the accuracy here
+            confusion_matrix = makeconfusion(rootNode, validation)
+            newAccuracy = accuracy(confusion_matrix, validation)
+            print("new accuracy")
+            print(newAccuracy)
+            
+            #If accuracy decreased undo prune
+            if(newAccuracy < Accuracy):
+                print("inside if")
+                node = oldNode.copy()
+                
+            #Else do nothing
+            
         else:
             #Keep traversing until reached leafs
             
@@ -325,8 +358,8 @@ def depth_search(node, training):
             left_set = sorted_data[:index + 1, :]
             right_set = sorted_data[index + 1:, :]
 
-            node = depth_search(left, left_set)
-            node = depth_search(right, right_set)
+            node = depth_search(left, left_set, validation, rootNode)
+            node = depth_search(right, right_set, validation, rootNode)
             
     return node
 
