@@ -302,8 +302,7 @@ def prune(node, validation, training):
     return Tree
 
 def depth_search(node, training, validation, rootNode):
-    print("#### TREE ####")
-    print(rootNode)
+
     
     left = node["left"]
     right = node["right"]
@@ -349,7 +348,7 @@ def depth_search(node, training, validation, rootNode):
             #Else do nothing
             
         else:
-            #Keep traversing until reached leafs
+            #Keep traversing until reached leaves
             
             #splitting the data as we move through nodes
             attribute, index, split_value = find_split(training)
@@ -358,8 +357,8 @@ def depth_search(node, training, validation, rootNode):
             left_set = sorted_data[:index + 1, :]
             right_set = sorted_data[index + 1:, :]
 
-            node = depth_search(left, left_set, validation, rootNode)
-            node = depth_search(right, right_set, validation, rootNode)
+            node = depth_search(left, left_set, validation, rootNode).copy()
+            node = depth_search(right, right_set, validation, rootNode).copy()
             
     return node
 
