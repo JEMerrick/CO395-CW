@@ -266,7 +266,33 @@ def traverse(node, room, test_row):
 
     return room
 
+def prune(node, validation):
+    #Find the accuracy of the current tree
+    Accuracy = accuracy(node, validation)
+    
+    #Find the new tree and accuracy
+    newTree = depth_search(node)
+    newAccuracy = accuracy(newTree)
+    
+    #Keep looking through leaf nodes, making new trees until accuracy is improved
+    While(newAccuracy < Accuracy):
+        #Set the old accuracy = new accuracy
+        Accuracy = newAccuracy
+        #Set the old tree = new tree
+        Tree = newTree
+        #Find the next tree
+        newTree = depth_search(Tree)
+        #Find the new accuracy
+        newAccuracy = accuracy(newTree)
 
+def depth_search(node):
+    #we are searching for a parent node with two leaves. We want to remove 1 leaf
+    if(node == leaf):
+        return node
+    else:
+        if((node["left"]["leaf"] == True) && (node["right"]["leaf"] == True)):
+            
+        
 def visualise_tree(node):
     fig = plt.figure()
     # x,y are parent coords, x1,y1 are current node coords
