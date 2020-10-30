@@ -133,7 +133,8 @@ def accuracy(confusion_matrix, validation):
 
     return accuracy
 
-def makeconfusion(node, validation, confusion_matrix):
+def makeconfusion(node, validation):
+    confusion_matrix = np.zeros(shape=(4, 4))
     for row in validation:
         actual_room = row[-1]
         # print("actual room: " + str(actual_room))
@@ -225,13 +226,23 @@ def evaluate(all_data, node):
 
         node, depth = decision_tree_learning(training, 0)
 
-        confusion_matrix = makeconfusion(node, validation, empty_matrix)
+        confusion_matrix = makeconfusion(node, validation)
 
         print(confusion_matrix)
 
         preprune_accuracy = accuracy(confusion_matrix, validation)
 
         print("before pruning: " + str(preprune_accuracy))
+        
+        #Finding the pruned accuracy
+        prunedTree = prune(node, validation, training)
+        
+        pruned_confusion = makeconfusion(prunedTree, validation)
+        
+        pruned_accuracy = accuracy(pruned_confusion, validation)
+        
+        print("after pruning: " + str(pruned_accuracy))
+        
 
     return 1
 
@@ -255,32 +266,69 @@ def traverse(node, room, test_row):
 
     return room
 
-def prune(node, validation):
+def prune(node, validation, training):
     #Find the accuracy of the current tree
-    Accuracy = accuracy(node, validation)
+    confusion_matrix = makeconfusion(node, validation)
+    Accuracy = accuracy(confusion_matrix, validation)
     
     #Find the new tree and accuracy
-    newTree = depth_search(node)
-    newAccuracy = accuracy(newTree)
+    newTree = depth_search(node, training)
+    confusion_matrix = makeconfusion(newTree, validation)
+    newAccuracy = accuracy(confusion_matrix, validation)
     
     #Keep looking through leaf nodes, making new trees until accuracy is improved
-    While(newAccuracy < Accuracy):
+    while(newAccuracy < Accuracy):
         #Set the old accuracy = new accuracy
         Accuracy = newAccuracy
         #Set the old tree = new tree
         Tree = newTree
         #Find the next tree
-        newTree = depth_search(Tree)
+        newTree = depth_search(Tree, training)
         #Find the new accuracy
-        newAccuracy = accuracy(newTree)
+        confusion_matrix = makeconfusion(newTree, validation)
+        newAccuracy = accuracy(confusion_matrix, validation)
+        
+    return Tree
 
-def depth_search(node):
+def depth_search(node, training):
+    
+    left = node["left"]
+    right = node["right"]
     #we are searching for a parent node with two leaves. We want to remove 1 leaf
-    if(node == leaf):
+    if(node["leaf"] == True):
         return node
     else:
-        if((node["left"]["leaf"] == True) && (node["right"]["leaf"] == True)):
+        if((left["leaf"] == True) and (right["leaf"] == True)):
             
+            #Remove the leaf nodes, set the current node as a leaf
+            node["left"] = None
+            node["right"] = None
+            node["leaf"] = True
+            node["value"] = None
+            
+            #Find which room has the most occurances set = attribute
+            #Need the set of data associated with each node
+            #Taking column of rooms only
+            rooms = training[:,-1].astype(int)
+            print("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
+            print(rooms)
+            frequentRoom = np.argmax(np.bincount(rooms.flat))
+            print(frequentRoom)
+            node["attribute"] = frequentRoom 
+        else:
+            #Keep traversing until reached leafs
+            
+            #splitting the data as we move through nodes
+            attribute, index, split_value = find_split(training)
+
+            sorted_data = training[np.argsort(training[:, attribute])]
+            left_set = sorted_data[:index + 1, :]
+            right_set = sorted_data[index + 1:, :]
+
+            node = depth_search(left, left_set)
+            node = depth_search(right, right_set)
+            
+    return node
 
 def visualise_tree(node):
     fig = plt.figure()
