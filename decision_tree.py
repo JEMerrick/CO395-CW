@@ -159,6 +159,10 @@ def evaluate(all_data, node):
     print("Rows")
     print(data_max)
 
+    average_preprune_accuracy = 0
+
+    average_prune_accuracy = 0
+
     for i in range(10):
         # increments
         x = int(i * decile)
@@ -232,19 +236,26 @@ def evaluate(all_data, node):
 
         preprune_accuracy = accuracy(confusion_matrix, validation)
 
-        print("before pruning: " + str(preprune_accuracy))
-        
+        average_preprune_accuracy += preprune_accuracy
+
         #Finding the pruned accuracy
         prunedTree = prune(node, validation, training)
-        
-        pruned_confusion = makeconfusion(prunedTree, validation)
-        
-        pruned_accuracy = accuracy(pruned_confusion, validation)
-        
-        print("after pruning: " + str(pruned_accuracy))
-        
 
-    return 1
+        pruned_confusion = makeconfusion(prunedTree, validation)
+
+        pruned_accuracy = accuracy(pruned_confusion, validation)
+
+        average_prune_accuracy += pruned_accuracy
+
+    average_preprune_accuracy /= 10
+
+    average_prune_accuracy /= 10
+
+    print("average preprune accuracy: " + str(average_preprune_accuracy))
+
+    print("average prune accuracy: " + str(average_prune_accuracy))
+
+    return average_preprune_accuracy, average_prune_accuracy
 
 def traverse(node, room, test_row):
     # print(test_row)
@@ -267,15 +278,19 @@ def traverse(node, room, test_row):
     return room
 
 def prune(node, validation, training):
+    
+    #TODO I dont actually need this function anymore, it can be removed for cleaner code later
+    
     #Find the accuracy of the current tree
     confusion_matrix = makeconfusion(node, validation)
     Accuracy = accuracy(confusion_matrix, validation)
-    
+
     #Find the new tree and accuracy
     newTree = depth_search(node, training, validation, node)
     
     confusion_matrix = makeconfusion(newTree, validation)
     newAccuracy = accuracy(confusion_matrix, validation)
+
     
     '''print("############### NEW TREE #############")
     print(newTree)
@@ -284,19 +299,19 @@ def prune(node, validation, training):
     print("#####    new accuracy    ######")
     print(newAccuracy)'''
     
-    #Keep looking through leaf nodes, making new trees until accuracy is improved
-    #Accurcy = Accuracy of whole treee
-    #Finding the max accuracy
 
     return newTree
 
+
 def depth_search(node, training, validation, rootNode):
     
-    #we are searching for a parent node with two leaves. We want to remove 1 leaf
+    #we are searching for a parent node with two children that are leaves
+    #If we reach a leaf move back up the tree, this has the effect that if a node is pruned, it will be checked again by the function
     if(node["leaf"] == True):
         return node
     else:
         if((node["left"]["leaf"] == True) and (node["right"]["leaf"] == True)):
+            
             #Finding accuracy of original node
             confusion_matrix = makeconfusion(rootNode, validation)
             Accuracy = accuracy(confusion_matrix, validation)
@@ -306,21 +321,21 @@ def depth_search(node, training, validation, rootNode):
             
             #Save the old node incase
             oldNode = node.copy()
-            
+
             #Remove the leaf nodes, set the current node as a leaf
             node["left"] = None
             node["right"] = None
             node["leaf"] = True
             node["value"] = None
-            
+
             #Find which room has the most occurances set = attribute
             #Need the set of data associated with each node
             #Taking column of rooms only
             rooms = training[:,-1].astype(int)
             frequentRoom = np.argmax(np.bincount(rooms.flat))
-            node["attribute"] = frequentRoom 
-            
-            #TODO Test the accuracy here
+            node["attribute"] = frequentRoom
+
+            #Test the accuracy here
             confusion_matrix = makeconfusion(rootNode, validation)
             newAccuracy = accuracy(confusion_matrix, validation)
             
@@ -330,12 +345,12 @@ def depth_search(node, training, validation, rootNode):
             #If accuracy decreased undo prune
             if(newAccuracy < Accuracy):
                 node = oldNode.copy()
-                
+
             #Else do nothing
-            
+
         else:
             #Keep traversing until reached leaves
-            
+
             #splitting the data as we move through nodes
             attribute, index, split_value = find_split(training)
 
@@ -343,9 +358,10 @@ def depth_search(node, training, validation, rootNode):
             left_set = sorted_data[:index + 1, :]
             right_set = sorted_data[index + 1:, :]
 
+            #search the left and right branches
             node["left"] = depth_search(node["left"], left_set, validation, rootNode)
             node["right"] = depth_search(node["right"], right_set, validation, rootNode)
-            
+
     return node
 
 def visualise_tree(node):
@@ -394,7 +410,7 @@ def main():
     print("Depth is ", depth)
     evaluate(all_data, node)
 
-    print("-----PRINT TREE------\n\n\n")
+    #print("-----PRINT TREE------\n\n\n")
 
     #visualise_tree(node)
 
