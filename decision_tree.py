@@ -133,6 +133,43 @@ def accuracy(confusion_matrix, validation):
 
     return accuracy
 
+def precision(confusion_matrix, validation):
+    # define room 1 as positive i.e. A[0][0]
+    true_pos = confusion_matrix[0][0]
+    true_neg = confusion_matrix[1][1] + confusion_matrix[2][2] + confusion_matrix[3][3]
+    false_pos = confusion_matrix[1][0] + confusion_matrix[2][0] + confusion_matrix[3][0]
+    false_neg = confusion_matrix[0][1] + confusion_matrix[0][2] + confusion_matrix[0][3]
+
+    # define room 2 as positive i.e. A[1][1]
+    true_pos += confusion_matrix[1][1]
+    true_neg += confusion_matrix[0][0] + confusion_matrix[2][2] + confusion_matrix[3][3]
+    false_pos += confusion_matrix[0][1] + confusion_matrix[2][1] + confusion_matrix[3][1]
+    false_neg += confusion_matrix[1][0] + confusion_matrix[1][2] + confusion_matrix[1][3]
+
+    # define room 3 as positive i.e. A[2][2]
+    true_pos += confusion_matrix[2][2]
+    true_neg += confusion_matrix[0][0] + confusion_matrix[1][1] + confusion_matrix[3][3]
+    false_pos += confusion_matrix[0][2] + confusion_matrix[1][2] + confusion_matrix[3][2]
+    false_neg += confusion_matrix[2][0] + confusion_matrix[2][1] + confusion_matrix[2][3]
+
+    # define room 3 as positive i.e. A[3][3]
+    true_pos += confusion_matrix[3][3]
+    true_neg += confusion_matrix[0][0] + confusion_matrix[1][1] + confusion_matrix[2][2]
+    false_pos += confusion_matrix[0][3] + confusion_matrix[1][3] + confusion_matrix[2][3]
+    false_neg += confusion_matrix[3][0] + confusion_matrix[3][1] + confusion_matrix[3][2]
+
+    true_pos /= 4
+    true_neg /= 4
+    false_pos /= 4
+    false_neg /= 4
+
+    accuracy = (true_pos + true_neg) / len(validation)
+    precision = true_pos / (true_pos + false_pos)
+    recall = true_pos / (true_pos + false_neg)
+    F1 = (2 * precision * recall) / (precision + recall)
+
+    return precision
+
 def makeconfusion(node, validation):
     confusion_matrix = np.zeros(shape=(4, 4))
     for row in validation:
@@ -235,6 +272,8 @@ def evaluate(all_data, node):
         print(confusion_matrix)
 
         preprune_accuracy = accuracy(confusion_matrix, testing)
+        preprune_precision = precision(confusion_matrix, testing)
+        print("preprune precision: " + str(preprune_precision))
 
         average_preprune_accuracy += preprune_accuracy
 
@@ -244,6 +283,8 @@ def evaluate(all_data, node):
         pruned_confusion = makeconfusion(prunedTree, testing)
 
         pruned_accuracy = accuracy(pruned_confusion, testing)
+        pruned_precision = precision(pruned_confusion, testing)
+        print("pruned precision: " + str(pruned_precision))
 
         average_prune_accuracy += pruned_accuracy
 
