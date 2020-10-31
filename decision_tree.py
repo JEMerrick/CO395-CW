@@ -241,9 +241,9 @@ def evaluate(all_data, node):
         #Finding the pruned accuracy
         prunedTree = prune(node, validation, training)
 
-        pruned_confusion = makeconfusion(prunedTree, validation)
+        pruned_confusion = makeconfusion(prunedTree, testing)
 
-        pruned_accuracy = accuracy(pruned_confusion, validation)
+        pruned_accuracy = accuracy(pruned_confusion, testing)
 
         average_prune_accuracy += pruned_accuracy
 
@@ -278,47 +278,47 @@ def traverse(node, room, test_row):
     return room
 
 def prune(node, validation, training):
-    
+
     #TODO I dont actually need this function anymore, it can be removed for cleaner code later
-    
+
     #Find the accuracy of the current tree
     confusion_matrix = makeconfusion(node, validation)
     Accuracy = accuracy(confusion_matrix, validation)
 
     #Find the new tree and accuracy
     newTree = depth_search(node, training, validation, node)
-    
+
     confusion_matrix = makeconfusion(newTree, validation)
     newAccuracy = accuracy(confusion_matrix, validation)
 
-    
+
     '''print("############### NEW TREE #############")
     print(newTree)
     print(" ######   original accuracy    #####")
     print(Accuracy)
     print("#####    new accuracy    ######")
     print(newAccuracy)'''
-    
+
 
     return newTree
 
 
 def depth_search(node, training, validation, rootNode):
-    
+
     #we are searching for a parent node with two children that are leaves
     #If we reach a leaf move back up the tree, this has the effect that if a node is pruned, it will be checked again by the function
     if(node["leaf"] == True):
         return node
     else:
         if((node["left"]["leaf"] == True) and (node["right"]["leaf"] == True)):
-            
+
             #Finding accuracy of original node
             confusion_matrix = makeconfusion(rootNode, validation)
             Accuracy = accuracy(confusion_matrix, validation)
-            
+
             #print("old accuracy")
             #print(Accuracy)
-            
+
             #Save the old node incase
             oldNode = node.copy()
 
@@ -338,10 +338,10 @@ def depth_search(node, training, validation, rootNode):
             #Test the accuracy here
             confusion_matrix = makeconfusion(rootNode, validation)
             newAccuracy = accuracy(confusion_matrix, validation)
-            
+
             #print("new accuracy")
             #print(newAccuracy)
-            
+
             #If accuracy decreased undo prune
             if(newAccuracy < Accuracy):
                 node = oldNode.copy()
