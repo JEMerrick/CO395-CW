@@ -230,11 +230,11 @@ def evaluate(all_data, node):
 
         node, depth = decision_tree_learning(training, 0)
 
-        confusion_matrix = makeconfusion(node, validation)
+        confusion_matrix = makeconfusion(node, testing)
 
         print(confusion_matrix)
 
-        preprune_accuracy = accuracy(confusion_matrix, validation)
+        preprune_accuracy = accuracy(confusion_matrix, testing)
 
         average_preprune_accuracy += preprune_accuracy
 
@@ -292,12 +292,12 @@ def prune(node, validation, training):
     newAccuracy = accuracy(confusion_matrix, validation)
 
 
-    '''print("############### NEW TREE #############")
-    print(newTree)
-    print(" ######   original accuracy    #####")
-    print(Accuracy)
-    print("#####    new accuracy    ######")
-    print(newAccuracy)'''
+    #print("############### NEW TREE #############")
+    #print(newTree)
+    #print(" ######   original accuracy    #####")
+    #print(Accuracy)
+    #print("#####    new accuracy    ######")
+    #print(newAccuracy)
 
 
     return newTree
@@ -343,7 +343,7 @@ def depth_search(node, training, validation, rootNode):
             #print(newAccuracy)
 
             #If accuracy decreased undo prune
-            if(newAccuracy < Accuracy):
+            if(newAccuracy <= Accuracy):
                 node = oldNode.copy()
 
             #Else do nothing
