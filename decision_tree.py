@@ -168,7 +168,7 @@ def precision(confusion_matrix, validation):
     recall = true_pos / (true_pos + false_neg)
     F1 = (2 * precision * recall) / (precision + recall)
 
-    return precision
+    return precision, recall, F1
 
 def makeconfusion(node, validation):
     confusion_matrix = np.zeros(shape=(4, 4))
@@ -197,8 +197,16 @@ def evaluate(all_data, node):
     print(data_max)
 
     average_preprune_accuracy = 0
-
     average_prune_accuracy = 0
+
+    average_preprune_precision = 0
+    average_prune_precision = 0
+
+    average_preprune_recall = 0
+    average_prune_recall = 0
+
+    average_preprune_F1 = 0
+    average_prune_F1 = 0
 
     for i in range(10):
         # increments
@@ -266,35 +274,45 @@ def evaluate(all_data, node):
             # print(C_start, data_max, data_min, C_end)
 
         node, depth = decision_tree_learning(training, 0)
-
         confusion_matrix = makeconfusion(node, testing)
-
         print(confusion_matrix)
-
         preprune_accuracy = accuracy(confusion_matrix, testing)
-        preprune_precision = precision(confusion_matrix, testing)
-        print("preprune precision: " + str(preprune_precision))
+        preprune_precision, preprune_recall, preprune_F1 = precision(confusion_matrix, testing)
 
         average_preprune_accuracy += preprune_accuracy
+        average_preprune_precision += preprune_precision
+        average_preprune_recall += preprune_recall
+        average_preprune_F1 += preprune_F1
 
         #Finding the pruned accuracy
         prunedTree = prune(node, validation, training)
-
         pruned_confusion = makeconfusion(prunedTree, testing)
-
+        print(pruned_confusion)
         pruned_accuracy = accuracy(pruned_confusion, testing)
-        pruned_precision = precision(pruned_confusion, testing)
-        print("pruned precision: " + str(pruned_precision))
+        pruned_precision, pruned_recall, pruned_F1 = precision(pruned_confusion, testing)
 
         average_prune_accuracy += pruned_accuracy
+        average_prune_precision += pruned_precision
+        average_prune_recall += pruned_recall
+        average_prune_F1 += pruned_F1
 
     average_preprune_accuracy /= 10
-
     average_prune_accuracy /= 10
+    average_preprune_F1 /= 10
+    average_prune_F1 /= 10
+    average_prune_recall /= 10
+    average_preprune_recall /= 10
+    average_prune_precision /= 10
+    average_preprune_precision /= 10
 
     print("average preprune accuracy: " + str(average_preprune_accuracy))
-
     print("average prune accuracy: " + str(average_prune_accuracy))
+    print("average preprune recall: " + str(average_preprune_recall))
+    print("average prune recall: " + str(average_prune_recall))
+    print("average preprune precision: " + str(average_preprune_precision))
+    print("average prune precision: " + str(average_prune_precision))
+    print("average preprune F1: " + str(average_preprune_F1))
+    print("average prune F1: " + str(average_prune_F1))
 
     return average_preprune_accuracy, average_prune_accuracy
 
