@@ -193,9 +193,6 @@ def evaluate(all_data, node):
     # Max row no
     data_max = all_data.shape[0]
 
-    print("Rows")
-    print(data_max)
-
     average_preprune_accuracy = 0
     average_prune_accuracy = 0
 
@@ -208,12 +205,12 @@ def evaluate(all_data, node):
     average_preprune_F1 = 0
     average_prune_F1 = 0
 
+    average_preprune_matrix = np.zeros(shape=(4, 4))
+    average_prune_matrix = np.zeros(shape=(4, 4))
+
     for i in range(10):
         # increments
         x = int(i * decile)
-
-        print("x = ")
-        print(x)
 
         empty_matrix = np.zeros(shape=(4, 4))
 
@@ -275,7 +272,7 @@ def evaluate(all_data, node):
 
         node, depth = decision_tree_learning(training, 0)
         confusion_matrix = makeconfusion(node, testing)
-        print(confusion_matrix)
+        average_preprune_matrix = np.add(confusion_matrix, average_preprune_matrix)
         preprune_accuracy = accuracy(confusion_matrix, testing)
         preprune_precision, preprune_recall, preprune_F1 = precision(confusion_matrix, testing)
 
@@ -287,7 +284,7 @@ def evaluate(all_data, node):
         #Finding the pruned accuracy
         prunedTree = prune(node, validation, training)
         pruned_confusion = makeconfusion(prunedTree, testing)
-        print(pruned_confusion)
+        average_prune_matrix = np.add(pruned_confusion, average_prune_matrix)
         pruned_accuracy = accuracy(pruned_confusion, testing)
         pruned_precision, pruned_recall, pruned_F1 = precision(pruned_confusion, testing)
 
@@ -304,6 +301,8 @@ def evaluate(all_data, node):
     average_preprune_recall /= 10
     average_prune_precision /= 10
     average_preprune_precision /= 10
+    average_prune_matrix /= 10
+    average_preprune_matrix /= 10
 
     print("average preprune accuracy: " + str(average_preprune_accuracy))
     print("average prune accuracy: " + str(average_prune_accuracy))
@@ -313,7 +312,10 @@ def evaluate(all_data, node):
     print("average prune precision: " + str(average_prune_precision))
     print("average preprune F1: " + str(average_preprune_F1))
     print("average prune F1: " + str(average_prune_F1))
-
+    print("average preprune confusion matrix: ")
+    print(average_preprune_matrix)
+    print("average prune confusion matrix: ")
+    print(average_prune_matrix)
     return average_preprune_accuracy, average_prune_accuracy
 
 def traverse(node, room, test_row):
@@ -452,7 +454,7 @@ def print_tree(root, fig, x, y, x1, y1):
 
 def main():
 
-    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+    all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
 
     shuffle(all_data)
 
@@ -465,8 +467,7 @@ def main():
     testing = all_data[validation_end:]
 
     node, depth = decision_tree_learning(training, 0)
-    print(node)
-    print("Depth is ", depth)
+
     evaluate(all_data, node)
 
     #print("-----PRINT TREE------\n\n\n")
