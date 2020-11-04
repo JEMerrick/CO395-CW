@@ -452,6 +452,77 @@ def print_tree(root, fig, x, y, x1, y1):
     # plt.plot([x,x1], [y,y1], 'k-')
 
 
+def noLeaf(root):
+    if root is None: 
+        return 0 
+    if(root['left'] is None and root['right'] is None): 
+        return 1 
+    else: 
+        return noLeaf(root['left']) + noLeaf(root['right']) 
+  
+
+def printTree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h):#if the first key tells you what feat was split on
+
+    if (root is None):
+        return
+    
+    midpoint_x = printTree.x_val + (1 + 0.2*noLeaf(root))/(2*canvas_w) #current x position + ratio of existing trees left with the whole.
+    midpoint_y = printTree.y_val
+
+    printTree.y_val -= 6/canvas_h
+    
+    if( root['leaf'] is False):
+        tree_text= str("[X" + str(root.get("attribute", "Empty")) + " < " + str(root.get("value", "Empty")) + "]")
+
+
+        printTree.direction = 'l'
+        plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=decision, arrowprops=arrows)
+        printTree.x_val += 11/canvas_w
+        printTree.y_val += 4/canvas_h
+        
+        printTree(decision, leaf, arrows, root['left'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h) # offset arrows by 0.025 (below textbox)
+        printTree.direction = 'r'
+        printTree(decision, leaf, arrows, root['right'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h)
+        
+
+    else: #Leaf Node
+        tree_text= str("Leaf: " + str(root.get("attribute", "Empty")))
+
+        if(printTree.direction == 'l'):
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x - 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
+        elif(printTree.direction == 'r'):
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x + 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
+
+        printTree.x_val -= 11/canvas_w
+        printTree.y_val += 3.5/canvas_h
+        
+
+def createPlot(root, depth):
+
+    #Decorations
+    decision = dict(boxstyle="round", edgecolor="#023e8a", facecolor="white", )
+    leaf = dict(boxstyle="round",facecolor="0.8")
+    arrows = dict(arrowstyle="<-", color = "#9d0208")
+
+
+    fig = plt.figure(1,facecolor='white')
+    fig.clf()
+    axprops = dict(xticks=[],yticks=[])
+    plt.subplot(111,frameon=False,**axprops)
+    
+    canvas_w = 0.2*noLeaf(root)
+    canvas_h = depth
+    
+    printTree.x_val=0.5/canvas_w
+    printTree.y_val=1
+    root_x = 0.5
+    root_y = 1
+
+    printTree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h)
+    plt.savefig('foo.png', bbox_inches='tight')
+    #plt.show()
+
+
 def main():
 
     all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
@@ -468,11 +539,13 @@ def main():
 
     node, depth = decision_tree_learning(training, 0)
 
-    evaluate(all_data, node)
-
-    #print("-----PRINT TREE------\n\n\n")
-
+    #evaluate(all_data, node)
+    print("-----PRINT TREE------\n\n\n")
     #visualise_tree(node)
 
+    print(node)
+    print("No Leafs: ", noLeaf(node))
+    createPlot(node, depth)    
 
 main()
+
