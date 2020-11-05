@@ -123,7 +123,7 @@ def metrics(confusion_matrix, validation):
     false_pos /= 4
     false_neg /= 4
 
-    accuracy = (true_pos + true_neg) / len(validation)
+    accuracy = (true_pos + true_neg) / (true_pos+true_neg+false_neg+false_pos)
     precision = true_pos / (true_pos + false_pos)
     recall = true_pos / (true_pos + false_neg)
     F1 = (2 * precision * recall) / (precision + recall)
