@@ -406,7 +406,7 @@ def create_plot(root, depth):
 
 def main():
 
-    all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
+    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 
     shuffle(all_data)
 
