@@ -137,8 +137,9 @@ def make_confusion(node, validation):
         actual_room = row[-1]
         predicted_room = traverse(node, 0, row)
         confusion_matrix[int(actual_room-1)][int(predicted_room-1)] += 1
-
-    return confusion_matrix
+    row_sums = confusion_matrix.sum(axis=1)
+    norm_matrix = confusion_matrix / row_sums[:,np.newaxis]
+    return norm_matrix
 
 
 def evaluate(all_data, node):
