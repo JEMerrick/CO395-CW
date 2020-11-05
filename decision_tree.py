@@ -14,10 +14,7 @@ def entropy(array):  # Entropy of rooms
 
 
 def find_split(array):  # Finding split/threshold
-    # print("find split")
-
     entropy_all = entropy(array)  # Entropy of whole dataset (Entropy(S))
-    # print("S(all): " + str(entropy_all))
 
     max_change = [0, 0, 0, 0]  # [source_no, index, remainder, midpoint]
     rows, columns = array.shape[0], array.shape[1] - 1
@@ -46,8 +43,6 @@ def find_split(array):  # Finding split/threshold
                 # If Gain > max_change.gain max_change = midpoint, gain
                 if gain > max_change[2]:
                     max_change = [i, j, gain, midpoint]
-                    # print(" ----------------  max_change ----------------- ")
-                    # print(max_change)
             # Continue until all elements have been read in that column and the max midpoint has been identified
     return max_change[0], max_change[1], max_change[3]
 
@@ -204,8 +199,6 @@ def evaluate(all_data, node):
         if C_end > data_max:
             C_end = C_end - data_max
 
-        print("run number", i + 1)
-
         if A_end > A_start:
             training = all_data[A_start:A_end]
         else:
@@ -224,8 +217,6 @@ def evaluate(all_data, node):
         nest_data = np.concatenate((training, validation))
 
         for j in range(9):
-
-            print("nested run number", j + 1)
             # We are iterating through the train (u) and eval (v) datasets
             y = int(j * decile)
 
@@ -249,21 +240,13 @@ def evaluate(all_data, node):
 
             if U_end > U_start:
                 training = nest_data[U_start:U_end]
-                print("training")
-                print(U_start, U_end)
             else:
                 training = np.concatenate([nest_data[U_start:nest_max], nest_data[data_min:U_end]])
-                print("training")
-                print(U_start, nest_max, data_min, U_end)
 
             if V_end > V_start:
                 validation = nest_data[V_start:V_end]
-                print("validation")
-                print(V_start, V_end)
             else:
                 validation = np.concatenate([nest_data[V_start:nest_max], nest_data[data_min:V_end]])
-                print("validation")
-                print(V_start, nest_max, data_min, V_end)
 
             node, depth = decision_tree_learning(training, 0)
 
