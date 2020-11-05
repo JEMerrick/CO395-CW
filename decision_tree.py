@@ -150,7 +150,7 @@ def evaluate(all_data, node):
 
     # Max row no
     data_max = all_data.shape[0]
-    
+
     # Max nested row no
     nest_max = int(0.9 * data_max)
 
@@ -165,7 +165,7 @@ def evaluate(all_data, node):
 
     average_preprune_F1 = 0
     average_prune_F1 = 0
-    
+
     average_preprune_depth = 0
     average_prune_depth = 0
 
@@ -205,7 +205,7 @@ def evaluate(all_data, node):
             C_end = C_end - data_max
 
         print("run number", i + 1)
-        
+
         if A_end > A_start:
             training = all_data[A_start:A_end]
         else:
@@ -220,33 +220,33 @@ def evaluate(all_data, node):
             testing = all_data[C_start:C_end]
         else:
             testing = np.concatenate([all_data[C_start:data_max], all_data[data_min:C_end]])
-        
+
         nest_data = np.concatenate((training, validation))
-        
+
         for j in range(9):
-            
-            print("nested run number", j+1)
-            #We are iterating through the train (u) and eval (v) datasets
+
+            print("nested run number", j + 1)
+            # We are iterating through the train (u) and eval (v) datasets
             y = int(j * decile)
-            
+
             U_start = y
             U_end = int(y + (8*decile))
 
             V_start = U_end
             V_end = int(V_start + decile)
-            
+
             if U_start > nest_max:
                 U_start = U_start - nest_max
 
             if V_start > nest_max:
                 V_start = V_start - nest_max
-            
+
             if U_end > nest_max:
                 U_end = U_end - nest_max
 
             if V_end > nest_max:
                 V_end = V_end - nest_max
-            
+
             if U_end > U_start:
                 training = nest_data[U_start:U_end]
                 print("training")
@@ -289,7 +289,7 @@ def evaluate(all_data, node):
             average_prune_recall += pruned_recall
             average_prune_F1 += pruned_F1
             average_prune_depth += pruned_depth
-            
+
     average_preprune_accuracy /= 90
     average_prune_accuracy /= 90
 
@@ -304,7 +304,7 @@ def evaluate(all_data, node):
 
     average_preprune_matrix /= 90
     average_prune_matrix /= 90
-    
+
     average_preprune_depth /= 90
     average_prune_depth /= 90
 
@@ -322,7 +322,7 @@ def evaluate(all_data, node):
 
     print("average preprune depth: ", average_preprune_depth)
     print("average prune depth: ", average_prune_depth)
-    
+
     print("average preprune confusion matrix: ")
     print(average_preprune_matrix)
 
@@ -348,8 +348,6 @@ def traverse(node, room, test_row):
 def depth_search(node, training, validation, root_node, depth):
     # we are searching for a parent node with two children that are leaves
     # If we reach a leaf move back up the tree, this has the effect that if a node is pruned, it will be checked again by the function
-
-
     if node["value"] is None:
         return node, depth
 
@@ -397,7 +395,7 @@ def depth_search(node, training, validation, root_node, depth):
         node["left"], l_depth = depth_search(node["left"], left_set, validation, root_node, depth + 1)
         node["right"], r_depth = depth_search(node["right"], right_set, validation, root_node, depth + 1)
         depth = max(l_depth, r_depth)
-        
+
     return node, depth
 
 
