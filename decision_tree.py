@@ -297,7 +297,7 @@ def depth_search(node, training, validation, root_node):
         accuracy = metrics(confusion_matrix, validation)[0]
 
         # Save the old node incase
-        oldNode = node.copy()
+        old_node = node.copy()
 
         # Remove the leaf nodes, set the current node as a leaf
         node["left"] = None
@@ -318,7 +318,7 @@ def depth_search(node, training, validation, root_node):
 
         # If accuracy decreased undo prune
         if new_accuracy <= accuracy:
-            node = oldNode.copy()
+            node = old_node.copy()
         # Else do nothing
 
     else:
