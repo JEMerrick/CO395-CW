@@ -150,6 +150,9 @@ def evaluate(all_data, node):
 
     # Max row no
     data_max = all_data.shape[0]
+    
+    # Max nested row no
+    nest_max = int(0.9 * data_max)
 
     average_preprune_accuracy = 0
     average_prune_accuracy = 0
@@ -162,6 +165,9 @@ def evaluate(all_data, node):
 
     average_preprune_F1 = 0
     average_prune_F1 = 0
+    
+    average_preprune_depth = 0
+    average_prune_depth = 0
 
     average_preprune_matrix = np.zeros(shape=(4, 4))
     average_prune_matrix = np.zeros(shape=(4, 4))
@@ -199,6 +205,7 @@ def evaluate(all_data, node):
             C_end = C_end - data_max
 
         print("run number", i + 1)
+        
         if A_end > A_start:
             training = all_data[A_start:A_end]
         else:
@@ -213,44 +220,93 @@ def evaluate(all_data, node):
             testing = all_data[C_start:C_end]
         else:
             testing = np.concatenate([all_data[C_start:data_max], all_data[data_min:C_end]])
+        
+        nest_data = np.concatenate((training, validation))
+        
+        for j in range(9):
+            
+            print("nested run number", j+1)
+            #We are iterating through the train (u) and eval (v) datasets
+            y = int(j * decile)
+            
+            U_start = y
+            U_end = int(y + (8*decile))
 
-        node, depth = decision_tree_learning(training, 0)
+            V_start = U_end
+            V_end = int(V_start + decile)
+            
+            if U_start > nest_max:
+                U_start = U_start - nest_max
 
-        confusion_matrix = make_confusion(node, testing)
-        average_preprune_matrix = np.add(confusion_matrix, average_preprune_matrix)
-        preprune_accuracy, preprune_precision, preprune_recall, preprune_F1 = metrics(confusion_matrix, testing)
+            if V_start > nest_max:
+                V_start = V_start - nest_max
+            
+            if U_end > nest_max:
+                U_end = U_end - nest_max
 
-        average_preprune_accuracy += preprune_accuracy
-        average_preprune_precision += preprune_precision
-        average_preprune_recall += preprune_recall
-        average_preprune_F1 += preprune_F1
+            if V_end > nest_max:
+                V_end = V_end - nest_max
+            
+            if U_end > U_start:
+                training = nest_data[U_start:U_end]
+                print("training")
+                print(U_start, U_end)
+            else:
+                training = np.concatenate([nest_data[U_start:nest_max], nest_data[data_min:U_end]])
+                print("training")
+                print(U_start, nest_max, data_min, U_end)
 
-        # Finding the pruned accuracy
-        pruned_tree = depth_search(node, training, validation, node)
+            if V_end > V_start:
+                validation = nest_data[V_start:V_end]
+                print("validation")
+                print(V_start, V_end)
+            else:
+                validation = np.concatenate([nest_data[V_start:nest_max], nest_data[data_min:V_end]])
+                print("validation")
+                print(V_start, nest_max, data_min, V_end)
 
-        pruned_confusion = make_confusion(pruned_tree, testing)
-        average_prune_matrix = np.add(pruned_confusion, average_prune_matrix)
-        pruned_accuracy, pruned_precision, pruned_recall, pruned_F1 = metrics(pruned_confusion, testing)
+            node, depth = decision_tree_learning(training, 0)
 
-        average_prune_accuracy += pruned_accuracy
-        average_prune_precision += pruned_precision
-        average_prune_recall += pruned_recall
-        average_prune_F1 += pruned_F1
+            confusion_matrix = make_confusion(node, testing)
+            average_preprune_matrix = np.add(confusion_matrix, average_preprune_matrix)
+            preprune_accuracy, preprune_precision, preprune_recall, preprune_F1 = metrics(confusion_matrix, testing)
 
-    average_preprune_accuracy /= 10
-    average_prune_accuracy /= 10
+            average_preprune_accuracy += preprune_accuracy
+            average_preprune_precision += preprune_precision
+            average_preprune_recall += preprune_recall
+            average_preprune_F1 += preprune_F1
+            average_preprune_depth += depth
 
-    average_preprune_F1 /= 10
-    average_prune_F1 /= 10
+            # Finding the pruned accuracy
+            pruned_tree, pruned_depth = depth_search(node, training, validation, node, 0)
 
-    average_prune_recall /= 10
-    average_preprune_recall /= 10
+            pruned_confusion = make_confusion(pruned_tree, testing)
+            average_prune_matrix = np.add(pruned_confusion, average_prune_matrix)
+            pruned_accuracy, pruned_precision, pruned_recall, pruned_F1 = metrics(pruned_confusion, testing)
 
-    average_prune_precision /= 10
-    average_preprune_precision /= 10
+            average_prune_accuracy += pruned_accuracy
+            average_prune_precision += pruned_precision
+            average_prune_recall += pruned_recall
+            average_prune_F1 += pruned_F1
+            average_prune_depth += pruned_depth
+            
+    average_preprune_accuracy /= 90
+    average_prune_accuracy /= 90
 
-    average_prune_matrix /= 10
-    average_preprune_matrix /= 10
+    average_preprune_F1 /= 90
+    average_prune_F1 /= 90
+
+    average_preprune_recall /= 90
+    average_prune_recall /= 90
+
+    average_preprune_precision /= 90
+    average_prune_precision /= 90
+
+    average_preprune_matrix /= 90
+    average_prune_matrix /= 90
+    
+    average_preprune_depth /= 90
+    average_prune_depth /= 90
 
     print("average preprune accuracy: ", average_preprune_accuracy)
     print("average prune accuracy: ", average_prune_accuracy)
@@ -264,6 +320,9 @@ def evaluate(all_data, node):
     print("average preprune F1: ", average_preprune_F1)
     print("average prune F1: ", average_prune_F1)
 
+    print("average preprune depth: ", average_preprune_depth)
+    print("average prune depth: ", average_prune_depth)
+    
     print("average preprune confusion matrix: ")
     print(average_preprune_matrix)
 
@@ -286,11 +345,13 @@ def traverse(node, room, test_row):
     return room
 
 
-def depth_search(node, training, validation, root_node):
+def depth_search(node, training, validation, root_node, depth):
     # we are searching for a parent node with two children that are leaves
     # If we reach a leaf move back up the tree, this has the effect that if a node is pruned, it will be checked again by the function
-    if node["leaf"] is True:
-        return node
+
+
+    if node["value"] is None:
+        return node, depth
 
     elif (node["left"]["leaf"] is True) and (node["right"]["leaf"] is True):
         # Finding accuracy of original node
@@ -333,10 +394,11 @@ def depth_search(node, training, validation, root_node):
         right_set = sorted_data[index + 1:, :]
 
         # search the left and right branches
-        node["left"] = depth_search(node["left"], left_set, validation, root_node)
-        node["right"] = depth_search(node["right"], right_set, validation, root_node)
-
-    return node
+        node["left"], l_depth = depth_search(node["left"], left_set, validation, root_node, depth + 1)
+        node["right"], r_depth = depth_search(node["right"], right_set, validation, root_node, depth + 1)
+        depth = max(l_depth, r_depth)
+        
+    return node, depth
 
 
 def num_leaves(root):
