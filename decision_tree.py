@@ -395,12 +395,12 @@ def print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h,
     if (root is None):
         return
     numLeafs = num_leaves(root)  #this determines the x width of this tree
-    
+
     midpoint_x = print_tree.x_val + (numLeafs/canvas_w)
     midpoint_y = print_tree.y_val
 
     print_tree.y_val -=10/canvas_h
-    
+
     if( root['right'] != None and root['left'] != None):
         tree_text= str("[X" + str(root.get("attribute", "Empty")) + " < " + str(root.get("value", "Empty")) + "]")
 
@@ -410,7 +410,7 @@ def print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h,
         print_tree(decision, leaf, arrows, root['left'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h, static_root)
         print_tree.direction = 'r'
         print_tree(decision, leaf, arrows, root['right'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h, static_root)
-        
+
         if(root == static_root):
             plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=decision)
         else:
@@ -427,7 +427,7 @@ def print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h,
             plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x - 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
         elif(print_tree.direction == 'r'):
             plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x + 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
-    
+
     print_tree.x_val += 1.0/canvas_w
     print_tree.y_val += 10/canvas_h
 
@@ -445,7 +445,7 @@ def create_plot(root, depth):
     axprops = dict(xticks=[], yticks=[])
     plt.subplot(111, frameon=False, **axprops)
 
-    canvas_w = float(0.04*num_leaves(root)) 
+    canvas_w = float(0.04*num_leaves(root))
     canvas_h = float(depth)
     print_tree.x_val=0.5/canvas_w
     print_tree.y_val=1.0
@@ -456,12 +456,12 @@ def create_plot(root, depth):
 
     print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root)
 
-    plt.savefig("tree.png", bbox_inches="tight")
+    plt.savefig("treeclean.png", bbox_inches="tight")
 
 
 def main():
 
-    all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
+    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
 
     shuffle(all_data)
 
