@@ -456,12 +456,12 @@ def create_plot(root, depth):
 
     print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root)
 
-    plt.savefig("prunedtreeclean.png", bbox_inches="tight")
+    plt.savefig("prunedtreenoisy.png", bbox_inches="tight")
 
 
 def main():
 
-    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+    all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
 
     shuffle(all_data)
 
