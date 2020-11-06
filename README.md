@@ -38,3 +38,5 @@ There are 4 functions in our code:
   This function will output a .png file of the tree given called "tree.png".
 
 Calling the main function will shuffle the data, then call decision_tree_learning(), create_plot(), and evaluate().
+
+To edit the dataset, please edit the filepath in the call to np.loadtxt() in the main.
