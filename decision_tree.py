@@ -390,37 +390,46 @@ def num_leaves(root):
     return num_leaves(root["left"]) + num_leaves(root["right"])
 
 
-def print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h):  # if the first key tells you what feat was split on
-    if root is None:
-        return
+def print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root):  # if the first key tells you what feat was split on
 
-    midpoint_x = print_tree.x_val + (1 + 0.2 * num_leaves(root)) / (2 * canvas_w)  # current x position + ratio of existing trees left with the whole.
+    if (root is None):
+        return
+    numLeafs = num_leaves(root)  #this determines the x width of this tree
+    
+    midpoint_x = print_tree.x_val + (numLeafs/canvas_w)
     midpoint_y = print_tree.y_val
 
-    print_tree.y_val -= 6 / canvas_h
+    print_tree.y_val -=10/canvas_h
+    
+    if( root['right'] != None and root['left'] != None):
+        tree_text= str("[X" + str(root.get("attribute", "Empty")) + " < " + str(root.get("value", "Empty")) + "]")
 
-    if root["leaf"] is False:
-        tree_text = str("[X" + str(root.get("attribute", "Empty")) + " < " + str(root.get("value", "Empty")) + "]")
 
-        print_tree.direction = "l"
-        plt.annotate(tree_text, xy=(root_x, root_y), xycoords="axes fraction", xytext=(midpoint_x, midpoint_y), textcoords="axes fraction", va="center", ha="center", bbox=decision, arrowprops=arrows)
-        print_tree.x_val += 11 / canvas_w
-        print_tree.y_val += 4 / canvas_h
 
-        print_tree(decision, leaf, arrows, root["left"], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h)  # offset arrows by 0.025 (below textbox)
-        print_tree.direction = "r"
-        print_tree(decision, leaf, arrows, root["right"], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h)
+        print_tree.direction = 'l'
+        print_tree(decision, leaf, arrows, root['left'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h, static_root)
+        print_tree.direction = 'r'
+        print_tree(decision, leaf, arrows, root['right'], midpoint_x, midpoint_y - 0.025, canvas_w, canvas_h, static_root)
+        
+        if(root == static_root):
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=decision)
+        else:
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=decision, arrowprops=arrows)
 
-    else:  # Leaf Node
-        tree_text = str("Leaf: " + str(root.get("attribute", "Empty")))
 
-        if print_tree.direction == "l":
-            plt.annotate(tree_text, xy=(root_x, root_y), xycoords="axes fraction", xytext=(midpoint_x - 0.05, midpoint_y), textcoords="axes fraction", va="center", ha="center", bbox=leaf, arrowprops=arrows)
-        elif print_tree.direction == "r":
-            plt.annotate(tree_text, xy=(root_x, root_y), xycoords="axes fraction", xytext=(midpoint_x + 0.05, midpoint_y), textcoords="axes fraction", va="center", ha="center", bbox=leaf, arrowprops=arrows)
 
-        print_tree.x_val -= 11 / canvas_w
-        print_tree.y_val += 3.5 / canvas_h
+
+    else:
+        #This is a leaf node
+        tree_text= str("Leaf: " + str(root.get("attribute", "Empty")))
+
+        if(print_tree.direction == 'l'):
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x - 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
+        elif(print_tree.direction == 'r'):
+            plt.annotate(tree_text, xy=(root_x, root_y), xycoords='axes fraction', xytext=(midpoint_x + 0.05, midpoint_y), textcoords='axes fraction', va='center', ha='center', bbox=leaf, arrowprops=arrows)
+    
+    print_tree.x_val += 1.0/canvas_w
+    print_tree.y_val += 10/canvas_h
 
 
 def create_plot(root, depth):
@@ -432,24 +441,27 @@ def create_plot(root, depth):
 
     fig = plt.figure(1, facecolor="white")
     fig.clf()
+    #remove grid
     axprops = dict(xticks=[], yticks=[])
     plt.subplot(111, frameon=False, **axprops)
 
-    canvas_w = 0.2 * num_leaves(root)
-    canvas_h = depth
-
-    print_tree.x_val = 0.5 / canvas_w
-    print_tree.y_val = 1
+    canvas_w = float(0.04*num_leaves(root)) 
+    canvas_h = float(depth)
+    print_tree.x_val=0.5/canvas_w
+    print_tree.y_val=1.0
     root_x = 0.5
-    root_y = 1
+    root_y = 1.0
 
-    print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h)
+    static_root = root
+
+    print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root)
+
     plt.savefig("tree.png", bbox_inches="tight")
 
 
 def main():
 
-    all_data = np.loadtxt("WIFI.db/clean_dataset.txt")
+    all_data = np.loadtxt("WIFI.db/noisy_dataset.txt")
 
     shuffle(all_data)
 
@@ -466,7 +478,7 @@ def main():
     print("Number of Leaves: ", num_leaves(node))
     create_plot(node, depth)
 
-    evaluate(all_data, node)
+    #evaluate(all_data, node)
 
 
 main()
