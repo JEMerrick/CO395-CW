@@ -456,7 +456,7 @@ def create_plot(root, depth):
 
     print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root)
 
-    plt.savefig("treeclean.png", bbox_inches="tight")
+    plt.savefig("prunedtreeclean.png", bbox_inches="tight")
 
 
 def main():
@@ -476,9 +476,9 @@ def main():
 
     # print(node)
     print("Number of Leaves: ", num_leaves(node))
-    create_plot(node, depth)
-    
+
     node, depth = depth_search(node, training, validation, node, 0)
+    create_plot(node, depth)
 
     #evaluate(all_data, node)
 
