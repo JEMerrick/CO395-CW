@@ -360,7 +360,7 @@ def depth_search(node, training, validation, root_node, depth):
         new_accuracy = metrics(confusion_matrix, validation)[0]
 
         # If accuracy decreased undo prune
-        if new_accuracy <= accuracy:
+        if new_accuracy < accuracy:
             node = old_node.copy()
         # Else do nothing
 
@@ -467,9 +467,9 @@ def main():
 
     decile = 0.1 * len(all_data)
     training_number = int(8 * decile)
-
+    validation_number = int(decile)
     training = all_data[:training_number]
-
+    validation = all_data[training_number:(training_number+validation_number)]
     node, depth = decision_tree_learning(training, 0)
 
     print("-----PRINT TREE------")
@@ -477,6 +477,8 @@ def main():
     # print(node)
     print("Number of Leaves: ", num_leaves(node))
     create_plot(node, depth)
+    
+    node, depth = depth_search(node, training, validation, node, 0)
 
     #evaluate(all_data, node)
 
