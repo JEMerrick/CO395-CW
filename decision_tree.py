@@ -460,31 +460,6 @@ def create_plot(root, depth):
 
     plt.savefig("treeclean.png", bbox_inches="tight")
 
-def create_plot2(root, depth):
-
-    # Decorations
-    decision = dict(boxstyle="round", edgecolor="#023e8a", facecolor="white", )
-    leaf = dict(boxstyle="round", facecolor="0.8")
-    arrows = dict(arrowstyle="<-", color="#9d0208")
-
-    fig = plt.figure(1, facecolor="white")
-    fig.clf()
-    #remove grid
-    axprops = dict(xticks=[], yticks=[])
-    plt.subplot(111, frameon=False, **axprops)
-
-    canvas_w = float(0.04*num_leaves(root))
-    canvas_h = float(depth)
-    print_tree.x_val=0.5/canvas_w
-    print_tree.y_val=1.0
-    root_x = 0.5
-    root_y = 1.0
-
-    static_root = root
-
-    print_tree(decision, leaf, arrows, root, root_x, root_y, canvas_w, canvas_h, static_root)
-
-    plt.savefig("prunedtreeclean.png", bbox_inches="tight")
 
 def main():
 
@@ -505,10 +480,7 @@ def main():
     # print(node)
     print("Number of Leaves: ", num_leaves(node))
 
-    node, depth = depth_search(node, training, validation, node, 0)
-    create_plot2(node, depth)
-
-    #evaluate(all_data, node)
+    evaluate(all_data, node)
 
 
 main()
